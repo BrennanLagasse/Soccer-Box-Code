@@ -35,18 +35,26 @@ NUM_TARGERTS = 8
 # Define functions which animate LEDs in various ways.
 def colorWipe(strip, color, wait_ms, target):
     """Wipe color across display a pixel at a time."""
-    start = (target*LED_PER_TARGET)
+    start = target*LED_PER_TARGET
 
     for i in range(start, start + LED_PER_TARGET):
         strip.setPixelColor(i, color)
         strip.show()
+
+        if (piezoceramics[target]):
+            points+=1
+            print("Target hit. New score is " + points)
+            break
+
         time.sleep(wait_ms/1000.0)
 	
 def fillAll(strip, color, target):
     """Instantly change color of pixels in target range"""
-    start = 1+(target*LED_PER_TARGET)
-    for i in range (start-1, start+32):
+    start = target*LED_PER_TARGET
+
+    for i in range(start, start + LED_PER_TARGET):
         strip.setPixelColor(i, color)
+
     strip.show()
 
 # Main program logic follows:
@@ -62,6 +70,10 @@ if __name__ == '__main__':
     # Intialize the library (must be called once before other functions).
     strip.begin()
 
+    # Variables
+    piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
+    points = 0
+
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
@@ -72,6 +84,8 @@ if __name__ == '__main__':
 
     # Intialize NeoPixel
     strip.begin()
+
+    #Initialize pizo ceramics and add to array
 
     # Termination Condition
     print ('Press Ctrl-C to quit.')
