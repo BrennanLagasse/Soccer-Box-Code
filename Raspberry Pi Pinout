@@ -1,0 +1,6 @@
+1  - OLED Power (GPIO 1)
+5  - OLED SDA (GPIO 3)
+6  - LED Gnd (GPIO 6)
+12 - LED Power (GPIO18)
+14 - OLED Gnd (GPIO 14)
+29 - OLED SCL (GPIO 5)
