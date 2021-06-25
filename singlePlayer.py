@@ -33,7 +33,7 @@ NUM_TARGERTS = 8
 
 
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, wait_ms, target):
+def colorWipe(strip, color, wait_ms, target, points = 0):
     """Wipe color across display a pixel at a time."""
     start = target*LED_PER_TARGET
 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
 
     # Variables
     piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
-    points = 0
+    score = 0
 
     print ('Press Ctrl-C to quit.')
     if not args.clear:
@@ -115,7 +115,7 @@ if __name__ == '__main__':
                 fillAll(strip, Color(0, 0, 255), target)
             
             # Reset light color
-            colorWipe(strip, Color(0, 0, 0), wait_ms, target)
+            colorWipe(strip, Color(0, 0, 0), wait_ms, target, score)
 
             # Check if time has expired and terminate if it has
             current_time = time.time()
