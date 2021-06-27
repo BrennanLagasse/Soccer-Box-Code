@@ -9,12 +9,25 @@
 
 
 
-
+# Game functionality
 import time
-from rpi_ws281x import *
-import argparse
 from random import random
 from random import randint
+import argparse
+
+# Lights
+from rpi_ws281x import *
+
+# OLED
+import Adafruit_GPIO.SPI as SPI
+import Adafruit_SSD1306
+
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+
+import subprocess
+
 
 # LED strip configuration:
 LED_COUNT      = 264      # Number of LED pixels.
@@ -57,6 +70,17 @@ def fillAll(strip, color, target):
 
     strip.show()
 
+def limitedInput(prompt, acceptableAnswers):
+    """Takes user input and reasks the user when an unacceptable answer is given"""
+
+    while True:
+        response = input(prompt)
+
+        if response in acceptableAnswers:
+            return response
+        else:
+            print("Invalid input.")
+
 # Main program logic follows:
 if __name__ == '__main__':
     # Process arguments
@@ -64,28 +88,15 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
     args = parser.parse_args()
 
-    # Create NeoPixel object with appropriate configuration.
+    # Create and initialize RGB lights
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-	
-    # Intialize the library (must be called once before other functions).
     strip.begin()
 
-    # Variables
+    # Create and store Piezoceramic objects (research this)
     piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
+
+    # Other variables
     score = 0
-
-    print ('Press Ctrl-C to quit.')
-    if not args.clear:
-        print('Use "-c" argument to clear LEDs on exit')
-        args = parser.parse_args()
-
-    # Create NeoPixel object
-    strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
-
-    # Intialize NeoPixel
-    strip.begin()
-
-    #Initialize pizo ceramics and add to array
 
     # Termination Condition
     print ('Press Ctrl-C to quit.')
@@ -93,10 +104,25 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
     
     # User Input
+    num_players = int(input("Number of players (1 or 2): "))
+    while(num_players != 1 and num_players != 2):
+        print("Invalid input.")
+        num_players = int(input("Number of players (1 or 2): "))
+
+    if(num_players == 2):
+        competitive = input("Competition mode (y/n): ")
+    while(competitive != "y" and competitive != "n"):
+        print("Invalid input.")
+        num_players = int(input("Competition mode (y/n): "))
+
+    
+
     wait_ms = input("Time in seconds to hit target:\n")
     wait_ms = int(wait_ms) / LED_PER_TARGET*1000 
+
     length = input("Time in seconds of game:\n")
     length = int(length)
+
     start_time = time.time()
 
 
