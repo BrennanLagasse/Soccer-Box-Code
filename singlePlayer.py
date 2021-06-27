@@ -1,11 +1,23 @@
 # Single Player Mode
 
-# 1 player game
-# Targets light up for a set amount of time
-# If the target is hit before time expires, add a point to the score and go to the next target
-# If time expires, go to the next target
-# Targets are chosen in random order
-# Run for a set duration of time
+
+# General Rules
+# A player is awared a point for hitting their designated target while the lights are still on
+# Targets' lights are on for a limited amount of time
+# After a target is triggered or time expires, a new unused target is selected as the designated target
+# The game lasts a set amount of time after which all lights turn off
+# Scores are displayed via the OLED
+
+# One Player Mode
+# One designated target on at a time
+
+# Two Player Simultaneous Mode
+# Each player has a designated target on at a time
+
+# Two Player First Person Scores (Competitive) Mode
+# Each player has a designated target on at a time
+# If either designated target is triggered, two new designated targets are selected
+
 
 
 
@@ -17,16 +29,6 @@ import argparse
 
 # Lights
 from rpi_ws281x import *
-
-# OLED
-import Adafruit_GPIO.SPI as SPI
-import Adafruit_SSD1306
-
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-
-import subprocess
 
 
 # LED strip configuration:
@@ -104,24 +106,15 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
     
     # User Input
-    num_players = int(input("Number of players (1 or 2): "))
-    while(num_players != 1 and num_players != 2):
-        print("Invalid input.")
-        num_players = int(input("Number of players (1 or 2): "))
+    num_players = int(limitedInput("Number of players (1 or 2):\n", [ "1", "2"]))
 
     if(num_players == 2):
-        competitive = input("Competition mode (y/n): ")
-    while(competitive != "y" and competitive != "n"):
-        print("Invalid input.")
-        num_players = int(input("Competition mode (y/n): "))
+        competitive = limitedInput("First person scores (y/n):\n", ["y", "n"])
+        print("For two player, player 1 will get the red goals and player 2 will get the blue goals.")
 
-    
+    target_length = int(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
 
-    wait_ms = input("Time in seconds to hit target:\n")
-    wait_ms = int(wait_ms) / LED_PER_TARGET*1000 
-
-    length = input("Time in seconds of game:\n")
-    length = int(length)
+    game_length = int(input("Time in seconds of game:\n"))
 
     start_time = time.time()
 
@@ -129,7 +122,7 @@ if __name__ == '__main__':
     try:
         while True:
             # Pick random target and color
-            target = randint(0, NUM_TARGERTS - 1)
+            target = randint(1, NUM_TARGERTS) - 1
             pickcolor = randint(1, 3)
 
             # Color Lights based on target
@@ -141,11 +134,11 @@ if __name__ == '__main__':
                 fillAll(strip, Color(0, 0, 255), target)
             
             # Reset light color
-            colorWipe(strip, Color(0, 0, 0), wait_ms, target, score)
+            colorWipe(strip, Color(0, 0, 0), target_length, target, score)
 
             # Check if time has expired and terminate if it has
             current_time = time.time()
-            if current_time-start_time > length:
+            if current_time-start_time > game_length:
                break
 
     except KeyboardInterrupt:
