@@ -11,6 +11,8 @@ from PIL import ImageFont
 
 import subprocess
 
+import argparse
+
 # Raspberry Pi pin configuration:
 RST = None     # on the PiOLED this pin isnt used
 # Note the following are only used with SPI:
@@ -77,20 +79,30 @@ font = ImageFont.load_default()
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
 # font = ImageFont.truetype('Minecraftia.ttf', 8)
 
-while True:
+try:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
+    args = parser.parse_args()
 
-    # Draw a black filled box to clear the image.
+    while True:
+
+        # Draw a black filled box to clear the image.
+        draw.rectangle((0,0,width,height), outline=0, fill=0)
+
+        # Change score (currently arbitrary for testing)
+        score = 10
+
+        # Write two lines of text.
+
+        draw.text((x, top),       "P1",  font=font, fill=255)
+        draw.text((x, top+8),     str(score), font=font, fill=255)
+
+        # Display image.
+        disp.image(image)
+        disp.display()
+        time.sleep(.1)
+except KeyboardInterrupt:
     draw.rectangle((0,0,width,height), outline=0, fill=0)
-
-    # Change score (currently arbitrary for testing)
-    score = 10
-
-    # Write two lines of text.
-
-    draw.text((x, top),       "P1",  font=font, fill=255)
-    draw.text((x, top+8),     str(score), font=font, fill=255)
-
-    # Display image.
     disp.image(image)
     disp.display()
-    time.sleep(.1)
+            
