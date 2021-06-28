@@ -102,6 +102,14 @@ def limitedInput(prompt, acceptableAnswers):
 def generateColor():
     return Color(randint(100, 255), randint(100, 255), randint(100, 255))
 
+def pickTargetExcept(exception):
+    x = randint(1, NUM_TARGERTS) - 1
+
+    while x == exception:
+        x = randint(1, NUM_TARGERTS) - 1
+    
+    return x
+
 # Main program logic follows:
 if __name__ == '__main__':
     # Process arguments
@@ -151,9 +159,7 @@ if __name__ == '__main__':
         targets[0] = randint(1, NUM_TARGERTS) - 1
 
         if num_players == 2:
-            targets[1] = randint(1, NUM_TARGERTS) - 1
-            while targets[0] == targets[1]:
-                targets[1] = randint(1, NUM_TARGERTS) - 1
+            targets[1] = pickTargetExcept(targets[0])
 
         # Repeating portion of the game
         while True:
@@ -164,11 +170,24 @@ if __name__ == '__main__':
                 # Wipe target, note hits, manage exit, and update score
                 score[0] += colorWipe(strip, BLACK, target_length, targets[0])
 
-            else:
+            elif competitive:
+                reset = False
 
-                # Color p1 target red, p2 target blue
-                fillAll(strip, RED, targets[0])
-                fillAll(strip, BLUE, targets[1])
+                if reset:
+                    # Reset previous targets
+                    fillAll(strip, BLACK, targets[0])
+                    fillAll(strip, BLACK, targets[1])
+
+                    # Pick new targets
+                    targets[0] = randint(0, NUM_TARGERTS - 1)
+                    targets[1] = pickTargetExcept(targets[0])
+
+                    # Color p1 target red, p2 target blue
+                    fillAll(strip, RED, targets[0])
+                    fillAll(strip, BLUE, targets[1])
+
+                    # Reset complete
+                    reset = False
 
                 # Wipe target, note hits, manage exit, and update score
                 colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0])
@@ -177,15 +196,61 @@ if __name__ == '__main__':
                 index[0] += 1
                 index[1] += 1
 
-                if piezoceramics[target[0]]:
+                if index[0] >= LED_PER_TARGET:
+                    reset = True
+
+
+                if piezoceramics[targets[0]]:
                     score[1] += 1
+                    reset = True
                 
                 if piezoceramics[targets[1]]:
                     score[1] += 1
+                    reset = True
 
+            else:
+                reset = [False, False]
+
+                if reset[0]:
+                    # Reset previous target
+                    fillAll(strip, BLACK, targets[0])
+
+                    # Pick new target
+                    targets[0] = pickTargetExcept(targets[1])
+
+                    # Color p1 target red
+                    fillAll(strip, RED, targets[0])
+
+                    # Reset done
+                    reset[0] = False
                 
+                if reset[1]:
+                    # Reset previous target
+                    fillAll(strip, BLACK, targets[1])
 
+                    # Pick new target
+                    targets[0] = pickTargetExcept(targets[0])
 
+                    # Color p1 target red
+                    fillAll(strip, RED, targets[1])
+
+                    # Reset done
+                    reset[1] = False
+
+                # Wipe target, note hits, manage exit, and update score
+                colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0])
+                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[1])
+
+                index[0] += 1
+                index[1] += 1
+
+                for x in range(0, 2):
+                    if piezoceramics[targets[x]]:
+                        score[x] += 1
+                        reset[x] = True
+                    elif index[x] >= NUM_TARGERTS:
+                        reset[x] = True
+                
             # Terminate when time expires
             current_time = time.time()
             if current_time-start_time > game_length:
@@ -194,4 +259,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         if args.clear:
             for target in range(0, NUM_TARGERTS):
-                fillAll(strip, Color(0,0,0), target)
+                fillAll(strip, BLACK, target)
