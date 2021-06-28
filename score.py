@@ -90,12 +90,15 @@ try:
         draw.rectangle((0,0,width,height), outline=0, fill=0)
 
         # Change score (currently arbitrary for testing)
-        score = 10
+        score = [10, 7]
 
         # Write two lines of text.
 
         draw.text((x, top),       "P1",  font=font, fill=255)
-        draw.text((x, top+8),     str(score), font=font, fill=255)
+        draw.text((x, top+8),     str(score[0]), font=font, fill=255)
+
+        draw.text((x + 50, top),       "P2",  font=font, fill=255)
+        draw.text((x + 50, top+8),     str(score[1]), font=font, fill=255)
 
         # Display image.
         disp.image(image)
