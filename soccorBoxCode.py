@@ -100,7 +100,14 @@ def limitedInput(prompt, acceptableAnswers):
 
 
 def generateColor():
-    return Color(randint(100, 255), randint(100, 255), randint(100, 255))
+    x = randint(1, 3)
+
+    if x == 1:
+        return RED
+    elif x == 2:
+        return GREEN
+    
+    return BLUE
 
 def pickTargetExcept(exception):
     x = randint(1, NUM_TARGERTS) - 1
@@ -152,23 +159,24 @@ if __name__ == '__main__':
         index = [0, 0] # used for simeltaneous targets
         reset = []
 
-        if num_players == 2:
-            targets.append(0)
-    
-        # Pick initial targets
+        # Pick initial target(s)
         targets[0] = randint(1, NUM_TARGERTS) - 1
 
         if num_players == 2:
-            targets[1] = pickTargetExcept(targets[0])
+            targets.append(pickTargetExcept(targets[0]))
 
         # Repeating portion of the game
         while True:
             if num_players == 1:
+                reset = False
+
                 # Color designated target
-                fillAll(strip, generateColor, targets[0])
+                fillAll(strip, generateColor(), targets[0])
 
                 # Wipe target, note hits, manage exit, and update score
                 score[0] += colorWipe(strip, BLACK, target_length, targets[0])
+
+                targets[0] = randint(0, NUM_TARGERTS - 1)
 
             elif competitive:
                 reset = False
