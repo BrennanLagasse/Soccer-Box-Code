@@ -25,6 +25,10 @@ import argparse
 # Lights
 from rpi_ws281x import *
 
+# Piezoceramics
+from gpiozero import DigitalInputDevice
+
+
 
 # LED strip configuration:
 LED_COUNT      = 264      # Number of LED pixels.
@@ -35,6 +39,9 @@ LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+
+# Piezoceramic GPIO Ports (not default numbering)
+PIEZOCERAMIC_PINS = [0, 0, 0, 0, 0, 0, 0, 0] # Fix later
 
 # Other Constants
 LED_PER_TARGET = 33
@@ -130,8 +137,10 @@ if __name__ == '__main__':
 
     # Create and store Piezoceramic objects (research this)
     piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
-
     
+
+    # for x in range(0, NUM_TARGERTS):
+        # piezoceramics[x] = new DigitalInputDevice
 
     # Termination Condition
     print ('Press Ctrl-C to quit.')
@@ -265,6 +274,5 @@ if __name__ == '__main__':
                break
 
     except KeyboardInterrupt:
-        if args.clear:
-            for target in range(0, NUM_TARGERTS):
-                fillAll(strip, BLACK, target)
+        for target in range(0, NUM_TARGERTS):
+            fillAll(strip, BLACK, target)
