@@ -41,7 +41,7 @@ LED_INVERT     = False   # True to invert the signal (when using NPN transistor 
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 
 # Piezoceramic GPIO Ports (not default numbering)
-PIEZOCERAMIC_PINS = [6, 12, 13, 16, 19, 20, 26, 21]
+PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21]
 
 # Other Constants
 LED_PER_TARGET = 33
