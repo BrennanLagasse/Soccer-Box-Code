@@ -81,7 +81,7 @@ def colorWipeByIndex(strip, color, wait_ms, target, index):
     if (piezoceramics[target]):
         return 1
 
-    time.sleep(wait_ms/1000.0)
+    time.sleep(wait_ms/1000.0 * 2) # 2 running simeltaneously
 
     return 0
 	
@@ -166,7 +166,7 @@ if __name__ == '__main__':
         score = [0, 0] # score[0] = p1 score, score[1] = p2 score
         targets = [0] # target[0] = p1 target, target[1] = p2 target (if applicable)
         index = [0, 0] # used for simeltaneous targets
-        reset = [false, false] # Used to determine if targets need to be reset with interative
+        reset = [False, False] # Used to determine if targets need to be reset with interative
 
         # Pick initial target(s)
         targets[0] = randint(1, NUM_TARGERTS) - 1
@@ -274,7 +274,9 @@ if __name__ == '__main__':
             # Terminate when time expires
             current_time = time.time()
             if current_time-start_time > game_length:
-               break
+                for target in range(0, NUM_TARGERTS):
+                    fillAll(strip, BLACK, target)
+                break
 
     except KeyboardInterrupt:
         for target in range(0, NUM_TARGERTS):
