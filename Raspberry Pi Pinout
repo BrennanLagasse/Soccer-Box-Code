@@ -4,3 +4,13 @@
 6  - LED Gnd
 12 - LED Power (GPIO18)
 14 - OLED Gnd
+31 - Target 1 (GPIO 6)
+32 - Target 2 (GPIO 12)
+33 - Target 3 (GPIO 13)
+35 - Target 4 (GPIO 19)
+36 - Target 5 (GPIO 16)
+37 - Target 6 (GPIO 26)
+38 - Target 7 (GPIO 20)
+40 - Target 8 (GPIO 21)
+
+
