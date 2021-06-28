@@ -1,6 +1,3 @@
-# Single Player Mode
-
-
 # General Rules
 # A player is awared a point for hitting their designated target while the lights are still on
 # Targets' lights are on for a limited amount of time
@@ -17,8 +14,6 @@
 # Two Player First Person Scores (Competitive) Mode
 # Each player has a designated target on at a time
 # If either designated target is triggered, two new designated targets are selected
-
-
 
 
 # Game functionality
@@ -45,11 +40,17 @@ LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
 LED_PER_TARGET = 33
 NUM_TARGERTS = 8
 
+# Colors
+RED = Color(255, 0, 0)
+GREEN = Color(0, 255, 0)
+BLUE = Color(0, 0, 255)
+BLACK = Color(0, 0, 0)
+
 
 
 # Define functions which animate LEDs in various ways.
-def colorWipe(strip, color, wait_ms, target, points = 0):
-    """Wipe color across display a pixel at a time."""
+def colorWipe(strip, color, wait_ms, target):
+    """Wipe color across display a pixel at a time"""
     start = target*LED_PER_TARGET
 
     for i in range(start, start + LED_PER_TARGET):
@@ -57,11 +58,25 @@ def colorWipe(strip, color, wait_ms, target, points = 0):
         strip.show()
 
         if (piezoceramics[target]):
-            points+=1
-            print("Target hit. New score is " + points)
-            break
+            return 1
 
         time.sleep(wait_ms/1000.0)
+
+    return 0
+
+def colorWipeByIndex(strip, color, wait_ms, target, index):
+    """Wipe color across display a pixel at a time with simeltaneous capability"""
+    i = target*LED_PER_TARGET + index
+
+    strip.setPixelColor(i, color)
+    strip.show()
+
+    if (piezoceramics[target]):
+        return 1
+
+    time.sleep(wait_ms/1000.0)
+
+    return 0
 	
 def fillAll(strip, color, target):
     """Instantly change color of pixels in target range"""
@@ -83,6 +98,10 @@ def limitedInput(prompt, acceptableAnswers):
         else:
             print("Invalid input.")
 
+
+def generateColor():
+    return Color(randint(100, 255), randint(100, 255), randint(100, 255))
+
 # Main program logic follows:
 if __name__ == '__main__':
     # Process arguments
@@ -97,8 +116,7 @@ if __name__ == '__main__':
     # Create and store Piezoceramic objects (research this)
     piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
 
-    # Other variables
-    score = 0
+    
 
     # Termination Condition
     print ('Press Ctrl-C to quit.')
@@ -120,27 +138,60 @@ if __name__ == '__main__':
 
 
     try:
+        # Initialize Game Variables
+        score = [0, 0] # score[0] = p1 score, score[1] = p2 score
+        targets = [0] # target[0] = p1 target, target[1] = p2 target (if applicable)
+        index = [0, 0] # used for simeltaneous targets
+        reset = []
+
+        if num_players == 2:
+            targets.append(0)
+    
+        # Pick initial targets
+        targets[0] = randint(1, NUM_TARGERTS) - 1
+
+        if num_players == 2:
+            targets[1] = randint(1, NUM_TARGERTS) - 1
+            while targets[0] == targets[1]:
+                targets[1] = randint(1, NUM_TARGERTS) - 1
+
+        # Repeating portion of the game
         while True:
-            # Pick random target and color
-            target = randint(1, NUM_TARGERTS) - 1
-            pickcolor = randint(1, 3)
+            if num_players == 1:
+                # Color designated target
+                fillAll(strip, generateColor, targets[0])
 
-            # Color Lights based on target
-            if pickcolor == 1:
-                fillAll(strip, Color(255, 0, 0), target)
-            if pickcolor == 2:
-                fillAll(strip, Color(0, 255, 0), target)
-            if pickcolor == 3:
-                fillAll(strip, Color(0, 0, 255), target)
-            
-            # Reset light color
-            colorWipe(strip, Color(0, 0, 0), target_length, target, score)
+                # Wipe target, note hits, manage exit, and update score
+                score[0] += colorWipe(strip, BLACK, target_length, targets[0])
 
-            # Check if time has expired and terminate if it has
+            else:
+
+                # Color p1 target red, p2 target blue
+                fillAll(strip, RED, targets[0])
+                fillAll(strip, BLUE, targets[1])
+
+                # Wipe target, note hits, manage exit, and update score
+                colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0])
+                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[1])
+
+                index[0] += 1
+                index[1] += 1
+
+                if piezoceramics[target[0]]:
+                    score[1] += 1
+                
+                if piezoceramics[targets[1]]:
+                    score[1] += 1
+
+                
+
+
+            # Terminate when time expires
             current_time = time.time()
             if current_time-start_time > game_length:
                break
 
     except KeyboardInterrupt:
         if args.clear:
-            colorWipe(strip, Color(0,0,0), 264)
+            for target in range(0, NUM_TARGERTS):
+                fillAll(strip, Color(0,0,0), target)
