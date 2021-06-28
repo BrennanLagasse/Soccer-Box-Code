@@ -166,7 +166,7 @@ if __name__ == '__main__':
         score = [0, 0] # score[0] = p1 score, score[1] = p2 score
         targets = [0] # target[0] = p1 target, target[1] = p2 target (if applicable)
         index = [0, 0] # used for simeltaneous targets
-        reset = []
+        reset = [false, false] # Used to determine if targets need to be reset with interative
 
         # Pick initial target(s)
         targets[0] = randint(1, NUM_TARGERTS) - 1
@@ -177,8 +177,6 @@ if __name__ == '__main__':
         # Repeating portion of the game
         while True:
             if num_players == 1:
-                reset = False
-
                 # Color designated target
                 fillAll(strip, generateColor(), targets[0])
 
@@ -188,9 +186,8 @@ if __name__ == '__main__':
                 targets[0] = randint(0, NUM_TARGERTS - 1)
 
             elif competitive:
-                reset = False
 
-                if reset:
+                if reset[0]:
                     # Reset previous targets
                     fillAll(strip, BLACK, targets[0])
                     fillAll(strip, BLACK, targets[1])
@@ -203,31 +200,31 @@ if __name__ == '__main__':
                     fillAll(strip, RED, targets[0])
                     fillAll(strip, BLUE, targets[1])
 
+                    # Reset index
+                    index[0] = 0
+
                     # Reset complete
-                    reset = False
+                    reset[0] = False
 
                 # Wipe target, note hits, manage exit, and update score
                 colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0])
-                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[1])
+                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[0])
 
                 index[0] += 1
-                index[1] += 1
 
                 if index[0] >= LED_PER_TARGET:
-                    reset = True
+                    reset[0] = True
 
 
                 if piezoceramics[targets[0]]:
-                    score[1] += 1
-                    reset = True
+                    score[0] += 1
+                    reset[0] = True
                 
                 if piezoceramics[targets[1]]:
                     score[1] += 1
-                    reset = True
+                    reset[0] = True
 
             else:
-                reset = [False, False]
-
                 if reset[0]:
                     # Reset previous target
                     fillAll(strip, BLACK, targets[0])
@@ -237,6 +234,9 @@ if __name__ == '__main__':
 
                     # Color p1 target red
                     fillAll(strip, RED, targets[0])
+
+                    # Reset index
+                    index[0] = 0
 
                     # Reset done
                     reset[0] = False
@@ -250,6 +250,9 @@ if __name__ == '__main__':
 
                     # Color p1 target red
                     fillAll(strip, RED, targets[1])
+
+                    # Reset index
+                    index[1] = 0
 
                     # Reset done
                     reset[1] = False
