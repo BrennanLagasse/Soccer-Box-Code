@@ -64,7 +64,7 @@ def colorWipe(strip, color, wait_ms, target):
         strip.setPixelColor(i, color)
         strip.show()
 
-        if piezoceramics[target].is_pressed():
+        if piezoceramics[target].is_pressed:
             return 1
 
         time.sleep(wait_ms/1000.0)
@@ -78,7 +78,8 @@ def colorWipeByIndex(strip, color, wait_ms, target, index):
     strip.setPixelColor(i, color)
     strip.show()
 
-    if piezoceramics[target].is_pressed():
+    if piezoceramics[target].is_pressed:
+        print("score")
         return 1
 
     time.sleep(wait_ms/1000.0 * 2) # 2 running simeltaneously
@@ -216,11 +217,11 @@ if __name__ == '__main__':
                     reset[0] = True
 
 
-                if piezoceramics[targets[0]].is_pressed():
+                if piezoceramics[targets[0]].is_pressed:
                     score[0] += 1
                     reset[0] = True
                 
-                if piezoceramics[targets[1]].is_pressed():
+                if piezoceramics[targets[1]].is_pressed:
                     score[1] += 1
                     reset[0] = True
 
@@ -265,7 +266,7 @@ if __name__ == '__main__':
                 index[1] += 1
 
                 for x in range(0, 2):
-                    if piezoceramics[targets[x]].is_pressed():
+                    if piezoceramics[targets[x]].is_pressed:
                         score[x] += 1
                         reset[x] = True
                     elif index[x] >= NUM_TARGERTS:
