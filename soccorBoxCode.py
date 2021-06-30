@@ -26,7 +26,7 @@ import argparse
 from rpi_ws281x import *
 
 # Piezoceramics
-from gpiozero import DigitalInputDevice
+from gpiozero import Button
 
 
 
@@ -64,7 +64,7 @@ def colorWipe(strip, color, wait_ms, target):
         strip.setPixelColor(i, color)
         strip.show()
 
-        if (piezoceramics[target]):
+        if piezoceramics[target].is_pressed():
             return 1
 
         time.sleep(wait_ms/1000.0)
@@ -78,7 +78,7 @@ def colorWipeByIndex(strip, color, wait_ms, target, index):
     strip.setPixelColor(i, color)
     strip.show()
 
-    if (piezoceramics[target]):
+    if piezoceramics[target].is_pressed():
         return 1
 
     time.sleep(wait_ms/1000.0 * 2) # 2 running simeltaneously
@@ -139,8 +139,8 @@ if __name__ == '__main__':
     piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
     
     # New Piezoceramic setup (when added)
-    # for x in range(0, NUM_TARGERTS):
-        # piezoceramics[x] = new DigitalInputDevice(PIEZOCERAMIC_PINS[x])
+    for x in range(0, NUM_TARGERTS):
+        piezoceramics[x] = Button(PIEZOCERAMIC_PINS[x])
 
     # Termination Condition
     print ('Press Ctrl-C to quit.')
@@ -216,11 +216,11 @@ if __name__ == '__main__':
                     reset[0] = True
 
 
-                if piezoceramics[targets[0]]:
+                if piezoceramics[targets[0]].is_pressed():
                     score[0] += 1
                     reset[0] = True
                 
-                if piezoceramics[targets[1]]:
+                if piezoceramics[targets[1]].is_pressed():
                     score[1] += 1
                     reset[0] = True
 
@@ -265,7 +265,7 @@ if __name__ == '__main__':
                 index[1] += 1
 
                 for x in range(0, 2):
-                    if piezoceramics[targets[x]]:
+                    if piezoceramics[targets[x]].is_pressed():
                         score[x] += 1
                         reset[x] = True
                     elif index[x] >= NUM_TARGERTS:
