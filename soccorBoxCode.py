@@ -201,7 +201,7 @@ if __name__ == '__main__':
                 # Wipe target, note hits, manage exit, and update score
                 score[0] += colorWipe(strip, BLACK, target_length, targets[0])
 
-                fillAll(strip, BLACK, target[0])
+                fillAll(strip, BLACK, targets[0])
 
                 if(frontFive):
                     targets[0] = randint(2,6)
