@@ -64,10 +64,13 @@ def colorWipe(strip, color, wait_ms, target):
         strip.setPixelColor(i, color)
         strip.show()
 
-        if piezoceramics[target].is_pressed:
-            return 1
 
-        time.sleep(wait_ms/1000.0)
+        time_start = time.time()
+
+        while (time.time() - time_start < wait_ms/1000):
+            if piezoceramics[target].is_pressed:
+                print("TARGET HIT :)")
+                return 1
 
     return 0
 
@@ -137,21 +140,32 @@ if __name__ == '__main__':
     strip.begin()
 
     # Create and store Piezoceramic objects (research this)
-    piezoceramics = [0, 0, 0, 0, 0, 0, 0, 0] # Array of piezocermaic objects (just 0s for now, add whatever read method later when fixed)
+    piezoceramics = [] 
     
     # New Piezoceramic setup (when added)
     for x in range(0, NUM_TARGERTS):
-        piezoceramics[x] = Button(PIEZOCERAMIC_PINS[x])
+        piezoceramics.append(Button(PIEZOCERAMIC_PINS[x]))
 
     # Termination Condition
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
+
+    # Game variables
+    competitive = "y"
+    frontFive = False
     
     # User Input
     num_players = int(limitedInput("Number of players (1 or 2):\n", [ "1", "2"]))
 
-    if(num_players == 2):
+    if(num_players == 1):
+        a = limitedInput("Do you want to use only the front five goals? (y/n):\n", ["y", "n"])
+
+        if(a == "y"):
+            frontFive = True
+        else:
+            frontFive = False
+    else:
         competitive = limitedInput("First person scores (y/n):\n", ["y", "n"])
         print("For two player, player 1 will get the red goals and player 2 will get the blue goals.")
 
@@ -170,7 +184,10 @@ if __name__ == '__main__':
         reset = [False, False] # Used to determine if targets need to be reset with interative
 
         # Pick initial target(s)
-        targets[0] = randint(1, NUM_TARGERTS) - 1
+        if (frontFive):
+            targets[0] = randint(2, 6)
+        else:
+            targets[0] = randint(1, NUM_TARGERTS) - 1
 
         if num_players == 2:
             targets.append(pickTargetExcept(targets[0]))
@@ -184,7 +201,10 @@ if __name__ == '__main__':
                 # Wipe target, note hits, manage exit, and update score
                 score[0] += colorWipe(strip, BLACK, target_length, targets[0])
 
-                targets[0] = randint(0, NUM_TARGERTS - 1)
+                if(frontFive):
+                    targets[0] = randint(2,6)
+                else:
+                    targets[0] = randint(0, NUM_TARGERTS - 1)
 
             elif competitive:
 
