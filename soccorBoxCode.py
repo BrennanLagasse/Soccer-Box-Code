@@ -43,7 +43,7 @@ def colorWipe(strip, color, wait_ms, target):
     return 0
 
 def colorWipeByIndex(strip, color, wait_ms, target, index, num_simeltaneous):
-    """Wipe color across display a pixel at a time with simeltaneous capability"""
+    """Wipe color across display a pixel at a time with simeltaneous capability. Returns True if associated piezo is triggered"""
     i = target*LED_PER_TARGET + index
 
     strip.setPixelColor(i, color)
@@ -56,7 +56,7 @@ def colorWipeByIndex(strip, color, wait_ms, target, index, num_simeltaneous):
     return True
 	
 def fillAll(strip, color, target):
-    """Instantly change color of pixels in target range"""
+    """Instantly change color of pixels on a target"""
     start = target*LED_PER_TARGET
 
     for i in range(start, start + LED_PER_TARGET):
@@ -64,8 +64,12 @@ def fillAll(strip, color, target):
 
     strip.show()
 
+def resetAll(strip):
+    for target in range(0, NUM_TARGERTS):
+            fillAll(strip, BLACK, target)
+
 def checkPiezoForTime(index, duration):
-    """Check if piezoceramic for a set time unless triggered first"""
+    """Check piezoceramic state for a set time until time expires or the piezoceramic is triggered. Returns if the piezoceramic was triggered (boolean)"""
     start_time = time.time()
 
     while (time.time() - start_time < duration):
@@ -75,9 +79,8 @@ def checkPiezoForTime(index, duration):
 
     return False
 
-
 def limitedInput(prompt, acceptableAnswers):
-    """Takes user input and reasks the user when an unacceptable answer is given"""
+    """Takes user input. Accepts predetermined answers and reasks the user for input when any other answer is given"""
 
     while True:
         response = input(prompt)
@@ -120,8 +123,7 @@ if __name__ == '__main__':
 
     # Create and store Piezoceramic objects (research this)
     piezoceramics = [] 
-    
-    # New Piezoceramic setup (when added)
+
     for x in range(0, NUM_TARGERTS):
         piezoceramics.append(Button(PIEZOCERAMIC_PINS[x]))
 
@@ -178,6 +180,9 @@ if __name__ == '__main__':
             if num_players == 1:
                 if over_shoulder:
                     if reset[0] == True:
+                        # Reset all targets
+                        resetAll(strip)
+
                         # Color center target white
                         fillAll(strip, WHITE, 4)
 
@@ -203,20 +208,23 @@ if __name__ == '__main__':
                             center_target = colorWipeByIndex(strip, GREEN, target_length, 4, x, 3)
                             right_target = colorWipeByIndex(strip, BLUE, target_length, 5, x, 3)
 
-                        if left_target:
-                            if designated_color == RED:
-                                score[0] += 1
-                            reset[0] = True
-                        elif center_target:
-                            if designated_color == GREEN:
-                                score[0] += 1
-                            reset[0] = True
-                        elif right_target:
-                            if designated_color == BLUE:
-                                score[0] += 1
-                            reset[0] = True
-                        
-                    
+                            # Check results
+
+                            if left_target:
+                                if designated_color == RED:
+                                    score[0] += 1
+                                break
+                            elif center_target:
+                                if designated_color == GREEN:
+                                    score[0] += 1
+                                break
+                            elif right_target:
+                                if designated_color == BLUE:
+                                    score[0] += 1
+                                break
+
+                        reset[0] = True
+
                 else:
                     # Color designated target
                     fillAll(strip, generateColor(), targets[0])
@@ -325,7 +333,5 @@ if __name__ == '__main__':
                 break
 
     except KeyboardInterrupt:
-        # Turn off all lights
-        for target in range(0, NUM_TARGERTS):
-            fillAll(strip, BLACK, target)
+        resetAll(strip)
         
