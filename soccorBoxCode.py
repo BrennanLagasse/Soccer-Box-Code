@@ -209,7 +209,6 @@ if __name__ == '__main__':
                             right_target = colorWipeByIndex(strip, BLUE, target_length, 5, x, 3)
 
                             # Check results
-
                             if left_target:
                                 if designated_color == RED:
                                     score[0] += 1
