@@ -10,7 +10,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-# Constants
+# LED Constants
 LED_COUNT      = 264
 LED_PIN        = 18      # GPIO pin (uses PWM)
 LED_FREQ_HZ    = 800000
@@ -20,12 +20,43 @@ LED_INVERT     = False
 LED_CHANNEL    = 0
 LED_PER_TARGET = 33
 NUM_TARGERTS = 8
-PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21] # GPIOs
+
+# Colors
 RED = Color(255, 0, 0)
 GREEN = Color(0, 255, 0)
 BLUE = Color(0, 0, 255)
 BLACK = Color(0, 0, 0)
 WHITE = Color(255, 255, 255)
+
+# OLED STUFF
+RST = None
+DC = 23
+SPI_PORT = 0
+SPI_DEVICE = 0
+
+# Piezos
+PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21] # GPIOs
+
+# Initialize score display
+oled_display = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
+
+oled_display.begin()
+
+oled_display.clear()
+oled_display.display()
+
+width = oled_display.width
+height = oled_display.height
+image = Image.new('1', (width, height))
+
+draw = ImageDraw.Draw(image)
+draw.rectangle((0,0,width,height), outline=0, fill=0)
+
+font = ImageFont.load_default()
+
+padding = -2
+top = padding
+bottom = height-padding
 
 
 def colorWipe(strip, color, wait_ms, target):
@@ -110,6 +141,20 @@ def pickTargetExcept(exception):
     
     return x
 
+def clearOLED():
+    draw.rectangle((0,0,width,height), outline=0, fill=0)
+
+def displayScore(num_players, scores):
+    clearOLED()
+
+    # Write two lines of text.
+    for x in range(0, num_players):
+        draw.text((x * 50, top),       "P" + (x + 1),  font=font, fill=255)
+        draw.text((x * 50, top+8),     str(score[x]), font=font, fill=255)
+
+    # Display image.
+    oled_display.image(image)
+    oled_display.display()
 
 if __name__ == '__main__':
     # Process arguments
@@ -323,14 +368,18 @@ if __name__ == '__main__':
                         reset[x] = True
                     elif index[x] >= NUM_TARGERTS:
                         reset[x] = True
-                
+            
+            # Display score
+            displayScore(num_players, score)
+
             # Terminate when time expires
             current_time = time.time()
             if current_time-start_time > game_length:
                 for target in range(0, NUM_TARGERTS):
                     fillAll(strip, BLACK, target)
+                    clearOLED()
                 break
 
     except KeyboardInterrupt:
         resetAll(strip)
-        
+        clearOLED()
