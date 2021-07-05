@@ -47,6 +47,7 @@ def colorWipe(strip, color, wait_ms, target):
         strip.setPixelColor(i, color)
         strip.show()
         time_start = time.time()
+        
         while (time.time() - time_start < wait_ms/1000):
             if piezoceramics[target].is_pressed:
                 print("TARGET HIT :)")
@@ -152,8 +153,8 @@ if __name__ == '__main__':
                 if(frontFive):
                     targets[0] = randint(2,6)
                 else:
-                    targets[0] = randint(0, NUM_TARGERTS - 1)
-                    # targets[0] = 7
+                    # targets[0] = randint(0, NUM_TARGERTS - 1)
+                    targets[0] = 0
 
             elif competitive:
 
