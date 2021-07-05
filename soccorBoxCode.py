@@ -1,25 +1,14 @@
-# General Rules
-# A player is awared a point for hitting their designated target while the lights are still on
-# Targets' lights are on for a limited amount of time
-# After a target is triggered or time expires, a new unused target is selected as the designated target
-# The game lasts a set amount of time after which all lights turn off
-# Scores are displayed via the OLED
-# One Player Mode
-# One designated target on at a time
-# Two Player Simultaneous Mode
-# Each player has a designated target on at a time
-# Two Player First Person Scores (Competitive) Mode
-# Each player has a designated target on at a time
-# If either designated target is triggered, two new designated targets are selected
-# Game functionality
 import time
 from random import random
 from random import randint
 import argparse
+
 # Lights
 from rpi_ws281x import *
+
 # Piezoceramics
 from gpiozero import Button
+
 # LED strip configuration:
 LED_COUNT      = 264      # Number of LED pixels.
 LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
@@ -29,16 +18,20 @@ LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
 LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
 LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+
 # Piezoceramic GPIO Ports (not default numbering)
 PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21]
+
 # Other Constants
 LED_PER_TARGET = 33
 NUM_TARGERTS = 8
+
 # Colors
 RED = Color(255, 0, 0)
 GREEN = Color(0, 255, 0)
 BLUE = Color(0, 0, 255)
 BLACK = Color(0, 0, 0)
+
 # Define functions which animate LEDs in various ways.
 def colorWipe(strip, color, wait_ms, target):
     """Wipe color across display a pixel at a time"""
@@ -98,37 +91,52 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--clear', action='store_true', help='clear the display on exit')
     args = parser.parse_args()
+
     # Create and initialize RGB lights
     strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
     strip.begin()
+
     # Create and store Piezoceramic objects (research this)
     piezoceramics = [] 
     
     # New Piezoceramic setup (when added)
     for x in range(0, NUM_TARGERTS):
         piezoceramics.append(Button(PIEZOCERAMIC_PINS[x]))
+
     # Termination Condition
     print ('Press Ctrl-C to quit.')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
-    # Game variables
-    competitive = "y"
-    frontFive = False
     
     # User Input
-    num_players = int(limitedInput("Number of players (1 or 2):\n", [ "1", "2"]))
-    if(num_players == 1):
-        a = limitedInput("Do you want to use only the front five goals? (y/n):\n", ["y", "n"])
-        if(a == "y"):
-            frontFive = True
-        else:
-            frontFive = False
+    game_mode = limitedInput("Select a game mode:\n (A) ONE PLAYER, ALL GOALS \n (B) ONE PLAYER, FRONT GOALS \n (C) ONE PLAYER, FRONT GOALS OVER THE SHOULDER \n (D) TWO PLAYER, SYNCHRONOUS \n (E) TWO PLAYER, ASYNCHRONOUS", 
+    ["a", "b", "c", "d", "e"])
+
+    if game_mode == "a":
+        num_players = 1
+        front_five = False
+        over_the_shoulder = False
+    elif game_mode == "b":
+        num_players = 1
+        front_five = True
+        over_the_shoulder = False
+    elif game_mode == "c":
+        num_players = 1
+        front_five = False
+        over_the_shoulder = True
+    elif game_mode == "d":
+        num_players = 2
+        competitive = False
     else:
-        competitive = limitedInput("First person scores (y/n):\n", ["y", "n"])
-        print("For two player, player 1 will get the red goals and player 2 will get the blue goals.")
+        num_players = 2
+        competitive = True
+
     target_length = int(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
+
     game_length = int(input("Time in seconds of game:\n"))
+
     start_time = time.time()
+
     try:
         # Initialize Game Variables
         score = [0, 0] # score[0] = p1 score, score[1] = p2 score
@@ -136,25 +144,72 @@ if __name__ == '__main__':
         index = [0, 0] # used for simeltaneous targets
         reset = [False, False] # Used to determine if targets need to be reset with interative
         # Pick initial target(s)
-        if (frontFive):
+        if (front_five):
             targets[0] = randint(2, 6)
         else:
             targets[0] = randint(1, NUM_TARGERTS) - 1
         if num_players == 2:
             targets.append(pickTargetExcept(targets[0]))
+            
         # Repeating portion of the game
         while True:
             if num_players == 1:
-                # Color designated target
-                fillAll(strip, generateColor(), targets[0])
-                # Wipe target, note hits, manage exit, and update score
-                score[0] += colorWipe(strip, BLACK, target_length, targets[0])
-                fillAll(strip, BLACK, targets[0])
-                if(frontFive):
-                    targets[0] = randint(2,6)
+                if over_the_shoulder:
+                    if reset[0] == True:
+                        # Reset all targets
+                        resetAll(strip)
+
+                        # Color center target white
+                        fillAll(strip, WHITE, 4)
+
+                        # Wait until target is hit
+                        while (not piezoceramics[4].is_pressed):
+                            time.wait(.01)
+
+                        # Reset target
+                        fillAll(strip, BLACK, 4)
+
+                        # Move on
+                        reset[0] = False
+                    else:
+                        # Pick designated color
+                        designated_color = generateColor()
+
+                        # Fill in either back side target with that color (the other is blank)
+                        fillAll(strip, designated_color, 1 + 6 * randint(0, 1))
+
+                        # Fill in the front targets and wipe
+                        for x in range(0, LED_PER_TARGET):
+                            left_target = colorWipeByIndex(strip, RED, target_length, 3, x, 3)
+                            center_target = colorWipeByIndex(strip, GREEN, target_length, 4, x, 3)
+                            right_target = colorWipeByIndex(strip, BLUE, target_length, 5, x, 3)
+
+                            # Check results
+                            if left_target:
+                                if designated_color == RED:
+                                    score[0] += 1
+                                break
+                            elif center_target:
+                                if designated_color == GREEN:
+                                    score[0] += 1
+                                break
+                            elif right_target:
+                                if designated_color == BLUE:
+                                    score[0] += 1
+                                break
+
+                        reset[0] = True
                 else:
-                    # targets[0] = randint(0, NUM_TARGERTS - 1)
-                    targets[0] = 0
+                    # Color designated target
+                    fillAll(strip, generateColor(), targets[0])
+                    # Wipe target, note hits, manage exit, and update score
+                    score[0] += colorWipe(strip, BLACK, target_length, targets[0])
+                    fillAll(strip, BLACK, targets[0])
+                    if(front_five):
+                        targets[0] = randint(2,6)
+                    else:
+                        # targets[0] = randint(0, NUM_TARGERTS - 1)
+                        targets[0] = 0
 
             elif competitive:
 
