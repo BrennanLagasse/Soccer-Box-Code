@@ -127,15 +127,18 @@ if __name__ == '__main__':
         piezoceramics.append(Button(PIEZOCERAMIC_PINS[x]))
 
     # Termination Condition
-    print ('Press Ctrl-C to quit.')
+    print ('Press Ctrl-C to quit. \n')
     if not args.clear:
         print('Use "-c" argument to clear LEDs on exit')
     
     # User Input
     a = " (A) ONE PLAYER, ALL GOALS \n"
     b = " (B) ONE PLAYER, FRONT GOALS \n"
+    c = " (C) ONE PLAYER, FRONT GOALS OVER THE SHOULDER \n"
+    d = " (D) TWO PLAYER, SYNCHRONOUS \n"
+    e = " (E) TWO PLAYER, ASYNCHRONOUS \n"
 
-    game_mode = limitedInput("Select a game mode:\n" + a + b + " (C) ONE PLAYER, FRONT GOALS OVER THE SHOULDER \n (D) TWO PLAYER, SYNCHRONOUS \n (E) TWO PLAYER, ASYNCHRONOUS \n", 
+    game_mode = limitedInput("Select a game mode:\n" + a + b + c + d + e, 
     ["a", "b", "c", "d", "e"])
 
     if game_mode == "a":
@@ -206,11 +209,16 @@ if __name__ == '__main__':
                         # Fill in either back side target with that color (the other is blank)
                         fillAll(strip, designated_color, 1 + 6 * randint(0, 1))
 
-                        # Fill in the front targets and wipe
+                        # Fill in the front targets 
+                        fillAll(strip, RED, 3)
+                        fillAll(strip, GREEN, 4)
+                        fillAll(strip, BLUE, 5)
+
+                        # Wipe targets
                         for x in range(0, LED_PER_TARGET):
-                            left_target = colorWipeByIndex(strip, RED, target_length, 3, x, 3)
-                            center_target = colorWipeByIndex(strip, GREEN, target_length, 4, x, 3)
-                            right_target = colorWipeByIndex(strip, BLUE, target_length, 5, x, 3)
+                            left_target = colorWipeByIndex(strip, BLACK, target_length, 3, x, 3)
+                            center_target = colorWipeByIndex(strip, BLACK, target_length, 4, x, 3)
+                            right_target = colorWipeByIndex(strip, BLACK, target_length, 5, x, 3)
 
                             # Check results
                             if left_target:
@@ -236,8 +244,7 @@ if __name__ == '__main__':
                     if(front_five):
                         targets[0] = randint(2,6)
                     else:
-                        # targets[0] = randint(0, NUM_TARGERTS - 1)
-                        targets[0] = 0
+                        targets[0] = randint(0, 1)
 
             elif competitive:
 
