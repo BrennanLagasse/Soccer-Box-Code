@@ -31,6 +31,7 @@ RED = Color(255, 0, 0)
 GREEN = Color(0, 255, 0)
 BLUE = Color(0, 0, 255)
 BLACK = Color(0, 0, 0)
+WHITE = Color(255, 255, 255)
 
 # Define functions which animate LEDs in various ways.
 def colorWipe(strip, color, wait_ms, target):
@@ -46,16 +47,19 @@ def colorWipe(strip, color, wait_ms, target):
                 print("TARGET HIT :)")
                 return 1
     return 0
-def colorWipeByIndex(strip, color, wait_ms, target, index):
-    """Wipe color across display a pixel at a time with simeltaneous capability"""
+
+def colorWipeByIndex(strip, color, wait_ms, target, index, num_simeltaneous):
+    """Wipe color across display a pixel at a time with simeltaneous capability. Returns True if associated piezo is triggered"""
     i = target*LED_PER_TARGET + index
+
     strip.setPixelColor(i, color)
     strip.show()
-    if piezoceramics[target].is_pressed:
-        print("score")
-        return 1
-    time.sleep(wait_ms/1000.0 * 2) # 2 running simeltaneously
-    return 0
+
+    # Delay while checking piezo
+    if checkPiezoForTime(target, wait_ms/(1000 * num_simeltaneous)):
+        return True
+
+    return False
 	
 def fillAll(strip, color, target):
     """Instantly change color of pixels in target range"""
@@ -63,6 +67,18 @@ def fillAll(strip, color, target):
     for i in range(start, start + LED_PER_TARGET):
         strip.setPixelColor(i, color)
     strip.show()
+
+def checkPiezoForTime(index, duration):
+    """Check piezoceramic state for a set time until time expires or the piezoceramic is triggered. Returns if the piezoceramic was triggered (boolean)"""
+    start_time = time.time()
+
+    while (time.time() - start_time < duration):
+        if piezoceramics[index].is_pressed:
+            print("TARGET " + index + " HIT")
+            return True
+
+    return False
+
 def limitedInput(prompt, acceptableAnswers):
     """Takes user input and reasks the user when an unacceptable answer is given"""
     while True:
@@ -71,6 +87,7 @@ def limitedInput(prompt, acceptableAnswers):
             return response
         else:
             print("Invalid input.")
+    
 def generateColor():
     x = randint(1, 3)
     if x == 1:
@@ -79,12 +96,18 @@ def generateColor():
         return GREEN
     
     return BLUE
+
 def pickTargetExcept(exception):
     x = randint(1, NUM_TARGERTS) - 1
     while x == exception:
         x = randint(1, NUM_TARGERTS) - 1
     
     return x
+
+def resetAll(strip):
+    for target in range(0, NUM_TARGERTS):
+            fillAll(strip, BLACK, target)
+    
 # Main program logic follows:
 if __name__ == '__main__':
     # Process arguments
@@ -109,7 +132,10 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
     
     # User Input
-    game_mode = limitedInput("Select a game mode:\n (A) ONE PLAYER, ALL GOALS \n (B) ONE PLAYER, FRONT GOALS \n (C) ONE PLAYER, FRONT GOALS OVER THE SHOULDER \n (D) TWO PLAYER, SYNCHRONOUS \n (E) TWO PLAYER, ASYNCHRONOUS", 
+    a = " (A) ONE PLAYER, ALL GOALS \n"
+    b = " (B) ONE PLAYER, FRONT GOALS \n"
+
+    game_mode = limitedInput("Select a game mode:\n" + a + b + " (C) ONE PLAYER, FRONT GOALS OVER THE SHOULDER \n (D) TWO PLAYER, SYNCHRONOUS \n (E) TWO PLAYER, ASYNCHRONOUS \n", 
     ["a", "b", "c", "d", "e"])
 
     if game_mode == "a":
@@ -156,18 +182,20 @@ if __name__ == '__main__':
             if num_players == 1:
                 if over_the_shoulder:
                     if reset[0] == True:
+                        initial_target = 0
+
                         # Reset all targets
                         resetAll(strip)
 
                         # Color center target white
-                        fillAll(strip, WHITE, 4)
+                        fillAll(strip, WHITE, initial_target)
 
                         # Wait until target is hit
-                        while (not piezoceramics[4].is_pressed):
-                            time.wait(.01)
+                        while (not piezoceramics[initial_target].is_pressed):
+                            time.sleep(.001)
 
                         # Reset target
-                        fillAll(strip, BLACK, 4)
+                        fillAll(strip, BLACK, initial_target)
 
                         # Move on
                         reset[0] = False
@@ -228,8 +256,8 @@ if __name__ == '__main__':
                     # Reset complete
                     reset[0] = False
                 # Wipe target, note hits, manage exit, and update score
-                colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0])
-                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[0])
+                colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0], 2)
+                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[0], 2)
                 index[0] += 1
                 if index[0] >= LED_PER_TARGET:
                     reset[0] = True
@@ -265,8 +293,8 @@ if __name__ == '__main__':
                     # Reset done
                     reset[1] = False
                 # Wipe target, note hits, manage exit, and update score
-                colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0])
-                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[1])
+                colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0], 2)
+                colorWipeByIndex(strip, BLACK, target_length, targets[1], index[1], 2)
                 index[0] += 1
                 index[1] += 1
                 for x in range(0, 2):
