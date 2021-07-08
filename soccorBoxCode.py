@@ -9,18 +9,21 @@ from rpi_ws281x import *
 # Piezoceramics
 from gpiozero import Button
 
-# LED strip configuration:
-LED_COUNT      = 264      # Number of LED pixels.
-LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
-#LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
-LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
-LED_DMA        = 10      # DMA channel to use for generating signal (try 10)
-LED_BRIGHTNESS = 100     # Set to 0 for darkest and 255 for brightest
-LED_INVERT     = False   # True to invert the signal (when using NPN transistor level shift)
-LED_CHANNEL    = 0       # set to '1' for GPIOs 13, 19, 41, 45 or 53
+
+# GPIO Pins
+PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21]
+LED_PIN = 18 
+
+# LED info
+LED_COUNT      = 264
+LED_FREQ_HZ    = 800000
+LED_DMA        = 10
+LED_BRIGHTNESS = 100
+LED_INVERT     = False
+LED_CHANNEL    = 0
 
 # Piezoceramic GPIO Ports (not default numbering)
-PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21]
+
 
 # Other Constants
 LED_PER_TARGET = 33
@@ -105,6 +108,7 @@ def pickTargetExcept(exception):
     return x
 
 def resetAll(strip):
+    """Reset all of the LEDs in the smart box"""
     for target in range(0, NUM_TARGERTS):
             fillAll(strip, BLACK, target)
     
@@ -338,9 +342,8 @@ if __name__ == '__main__':
             # Terminate when time expires
             current_time = time.time()
             if current_time-start_time > game_length:
-                for target in range(0, NUM_TARGERTS):
-                    fillAll(strip, BLACK, target)
+                resetAll(strip)
                 break
     except KeyboardInterrupt:
         for target in range(0, NUM_TARGERTS):
-            fillAll(strip, BLACK, target)
+            resetAll(strip)
