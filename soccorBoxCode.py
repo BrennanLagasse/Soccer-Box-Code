@@ -136,51 +136,35 @@ if __name__ == '__main__':
         print('Use "-c" argument to clear LEDs on exit')
     
     # User Input
-    a = " (A) ONE PLAYER - TARGET SCAN \n"
-    b = " (B) ONE PLAYER - MINI TARGET SCAN \n"
-    c = " (C) ONE PLAYER - PREDICTION PLAYS"
-    d = " (D) ONE PLAYER - SHOULDER SHOTS \n"
-    e = " (E) TWO PLAYER - DUAL TARGET SCAN \n"
-    f = " (F) TWO PLAYER - TARGET RACE \n"
-    g = " (G) TWO PLAYER - 1v1"
+    a = " (A) ONE PLAYER, ALL GOALS \n"
+    b = " (B) ONE PLAYER, FRONT GOALS \n"
+    c = " (C) ONE PLAYER, FRONT GOALS OVER THE SHOULDER \n"
+    d = " (D) TWO PLAYER, SYNCHRONOUS \n"
+    e = " (E) TWO PLAYER, ASYNCHRONOUS \n"
 
-    game_mode = limitedInput("Select a game mode:\n" + a + b + c + d + e + f + g, 
-    ["a", "b", "c", "d", "e", "f", "g"])
+    game_mode = limitedInput("Select a game mode:\n" + a + b + c + d + e, 
+    ["a", "b", "c", "d", "e"])
 
     if game_mode == "a":
         num_players = 1
         front_five = False
         over_the_shoulder = False
-        prediction = False
     elif game_mode == "b":
         num_players = 1
         front_five = True
         over_the_shoulder = False
-        prediction = False
     elif game_mode == "c":
-        print("Not Done")
-        num_players = 1
-        front_five = False
-        over_the_shoulder = False
-        prediction = True
-    elif game_mode == "d":
         num_players = 1
         front_five = False
         over_the_shoulder = True
-        prediction = False
-    elif game_mode == "e":
+    elif game_mode == "d":
         num_players = 2
-        synchronous = True
-        constant_targets = False
-    elif game_mode == "f":
-        num_players = 2
-        synchronous = False
-        constant_targets = False
+        front_five = False
+        competitive = False
     else:
-        print("Not Done")
         num_players = 2
-        synchronous = False
-        constant_targets = True
+        front_five = False
+        competitive = True
 
     target_length = int(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
 
@@ -260,18 +244,15 @@ if __name__ == '__main__':
                 else:
                     # Color designated target
                     fillAll(strip, generateColor(), targets[0])
-
                     # Wipe target, note hits, manage exit, and update score
                     score[0] += colorWipe(strip, BLACK, target_length, targets[0])
-
                     fillAll(strip, BLACK, targets[0])
-
                     if(front_five):
                         targets[0] = randint(2,6)
                     else:
                         targets[0] = randint(0, NUM_TARGERTS - 1)
 
-            elif synchronous:
+            elif competitive:
 
                 if reset[0]:
                     # Reset previous targets
@@ -287,13 +268,10 @@ if __name__ == '__main__':
                     index[0] = 0
                     # Reset complete
                     reset[0] = False
-
                 # Wipe target, note hits, manage exit, and update score
                 colorWipeByIndex(strip, BLACK, target_length, targets[0], index[0], 2)
                 colorWipeByIndex(strip, BLACK, target_length, targets[1], index[0], 2)
-
                 index[0] += 1
-
                 if index[0] >= LED_PER_TARGET:
                     reset[0] = True
                 if piezoceramics[targets[0]].is_pressed:
