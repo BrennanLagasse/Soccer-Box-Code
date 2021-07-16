@@ -250,7 +250,7 @@ if __name__ == '__main__':
                     if(front_five):
                         targets[0] = randint(2,6)
                     else:
-                        targets[0] = randint(0, NUM_TARGERTS - 1)
+                        targets[0] = randint(0, 7)
 
             elif competitive:
 
