@@ -14,11 +14,8 @@ def piezoTriggered(index):
 piezoceramics = [] 
 
 for x in range(0, NUM_TARGERTS):
-    # Create Piezo object
-    piezoceramics.append(Button(PIEZOCERAMIC_PINS[x]))
-
-    #Add pulldown
-    piezoceramics[x].pull_up(False)
+    # Create Piezo object, pull down
+    piezoceramics.append(Button(PIEZOCERAMIC_PINS[x], True)) #, False
 
     # Add event listener
     piezoceramics[x].when_pressed = piezoTriggered(x)
@@ -26,4 +23,5 @@ for x in range(0, NUM_TARGERTS):
     
 
 while True:
-    time.sleep(100)
+    print("Still active")
+    time.sleep(10)
