@@ -1,7 +1,7 @@
 from gpiozero import Button
 import time
 
-NUM_TARGERTS = 8
+NUM_TARGERTS = 2
 
 PIEZOCERAMIC_PINS = [6, 12, 13, 19, 16, 26, 20, 21]
 
@@ -15,7 +15,10 @@ piezoceramics = []
 
 for x in range(0, NUM_TARGERTS):
     # Create Piezo object, pull down
-    piezoceramics.append(Button(PIEZOCERAMIC_PINS[x], True)) #, False
+    piezoceramics.append(Button(PIEZOCERAMIC_PINS[x], None, True)) 
+    
+    # ^ None = floating
+    # ^ True = v not reversed, None = ?
 
     # Add event listener
     piezoceramics[x].when_pressed = piezoTriggered(x)
