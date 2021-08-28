@@ -16,7 +16,7 @@ LED_BRIGHTNESS = 100
 LED_INVERT     = False
 LED_CHANNEL    = 0
 LED_PER_TARGET = 33
-NUM_TARGERTS = 8
+NUM_TARGETS = 8
 
 # Colors
 RED = Color(255, 0, 0)
@@ -41,11 +41,11 @@ GAMES = {
 }
 
 GAME_DATA = [
-    # num_players | front_five  | competitive | glancing_goals | preperation
+    # num_players | front_five  | competitive | glancing_goals | preperation | path
     [1,            False,        False,        False,           False       ], # 1
     [1,            True,         False,        False,           False       ], # 2
     [1,            False,        False,        True,            False       ], # 3
-    [1,            False,        False,        True,            True        ], # 4
+    [1,            False,        False,        False,           True        ], # 4
     [2,            False,        True,         False,           False       ], # 5
     [2,            False,        False,        False,           False       ], # 6
     [2,            False,        False,        False,           True        ]  # 7
@@ -53,7 +53,6 @@ GAME_DATA = [
 
 # Global variables
 score = [0, 0]
-exit = False
 prev = []
 
 # Tnitialize and start RGB lights
@@ -62,15 +61,20 @@ strip.begin()
 
 
 # Define functions which animate LEDs in various ways.
-def colorWipeByIndex(strip, color, wait_ms, target, index, num_simeltaneous):
-    """Wipe color across display a pixel at a time with simeltaneous capability. Returns True if associated piezo is triggered"""
+def color_wipe(strip, color, target, index, wait_ms, num_simeltaneous):
+    """Wipe color across display a pixel at a time"""
     i = target*LED_PER_TARGET + index
 
     strip.setPixelColor(i, color)
     strip.show()
 
-    # Check if the value is in the log
-    if index in prev:
+    
+    time.sleep(wait_ms/(1000 * num_simeltaneous) )
+
+# Check Log
+def check_log(target):
+    """Check log for duration between light changes"""
+    if target in prev:
         return True
 
     # Clear the log as the data has been seen twice by now
@@ -78,12 +82,21 @@ def colorWipeByIndex(strip, color, wait_ms, target, index, num_simeltaneous):
 
     # Check if the value is being sent + update log
     while (arduino.inWaiting()>0): 
-        # Add info to temporary log
-        prev.append(int(arduino.readline()))
-        # Remove data after reading
-        arduino.flushInput() 
+        # Get new information
+        val = int(arduino.readline())
 
-    time.sleep(wait_ms/(1000 * num_simeltaneous))
+        # Print value
+        print(str(val) + " hit")
+
+        # Check if target is in new info
+        if(val == target):
+            return True
+
+        # Add info to temporary log
+        prev.append(val)
+
+        # Remove data after reading
+        arduino.flushInput()
 
     return False
 	
@@ -112,23 +125,23 @@ def generateColor():
     
     return BLUE
 
-def pickTargetExcept(exception):
+def pick_target(exceptions=[]):
     """Pick a target excluding given targets"""
-    x = randint(1, NUM_TARGERTS) - 1
-    while x in exception:
-        x = randint(1, NUM_TARGERTS) - 1
+    x = randint(0, NUM_TARGETS - 1)
+    while x in exceptions:
+        x = randint(0, NUM_TARGETS - 1)
     
     return x
 
 def resetAll(strip):
     """Reset all of the LEDs in the smart box"""
-    for target in range(0, NUM_TARGERTS):
+    for target in range(0, NUM_TARGETS):
             fillAll(strip, BLACK, target)
 
 
 def game_from_input():
-    n = int(limitedInput("Select a game mode:\n" + GAMES["1"], GAMES["2"], GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"], 
-            ["1", "2", "3", "4", "5", "6", "7"]))
+    n = int(limitedInput("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"], 
+            ["1", "2", "3", "4", "5", "6", "7"])) - 1
 
     target_length = int(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
 
@@ -152,14 +165,17 @@ class Game:
         self.targets = [0]
         self.next_targets = [0]
         self.index = [0, 0]
+        self.exit = False
 
         # Pick initial target(s)
-        if self.prediction:
-            self.next_targets = randint(1, NUM_TARGERTS) - 1
-            self.next_targets.append(pickTargetExcept([self.targets[0], self.next_targets[0], self.targets[1]]))
+        if self.num_players > 1:
+            self.targets.append(0)
+        if self.preperation:
+            self.next_targets[0] = pick_target()
+            self.next_targets.append(pick_target([self.next_targets[0]]))
 
         for i in range(0, self.num_players):
-            self.reset(i, 0)
+            self.reset(i)
         
 
     def update(self):
@@ -173,52 +189,56 @@ class Game:
         current_time = time.time()
         if current_time - self.start_time > self.game_length:
             resetAll(strip)
-            exit = True
+            self.exit = True
 
     def standard_update(self):
         for i in range(0, self.num_players):
-            check = colorWipeByIndex(strip, BLACK, self.target_length, self.targets[i], self.index[i], self.num_players)
+            # Update display
+            color_wipe(strip, BLACK, self.targets[i], self.index[i], self.target_length, self.num_players)
+
+            # Check for score
+            check = check_log(self.targets[i])
 
             if(check):
+                print("Score!")
                 score[i] += 1
                 if(self.competitive):
-                    self.reset(0, self.targets[0])
-                    self.reset(1, self.targets[1])
+                    self.reset(0)
+                    self.reset(1)
                 else:
-                    self.reset(i, self.targets[i])
+                    self.reset(i)
                 continue
 
 
             self.index[i] += 1
 
             if(self.index[i] >= LED_PER_TARGET):
-                self.reset(i, self.targets[i])
-
-        print("not done yet")
-        exit = True
+                self.reset(i)
+                print(self.targets[i])
+                print("\n")
 
     def glancing_goals_update(self):
         print("not done yet")
-        exit = True
+        self.exit = True
 
-    def reset(self, player, target):
+    def reset(self, player):
         # Reset previous target
-        fillAll(strip, BLACK, self.targets[target])
+        fillAll(strip, BLACK, self.targets[player])
 
         # Pick new target
         if(self.front_five):
-            self.targets[player] = randint(0, NUM_TARGERTS - 1)
+            self.targets[player] = randint(2, 6)
         elif(self.preperation):
             self.targets[player] = self.next_targets[player]
             if(self.num_players == 1):
-                self.next_targets[player] = pickTargetExcept(self.targets[player])
+                self.next_targets[player] = pick_target([self.targets[player]])
             else:
-                self.next_targets[player] = pickTargetExcept([self.targets[0], self.targets[1], self.next_targets[0], self.next_targets[1]])
+                self.next_targets[player] = pick_target([self.targets[0], self.targets[1], self.next_targets[0], self.next_targets[1]])
         else:
             if(self.num_players == 1):
-                self.targets[player] = randint(0, NUM_TARGERTS - 1)
+                self.targets[player] = pick_target()
             else:
-                self.targets[player] = pickTargetExcept(self.targets[0], self.targets[1])
+                self.targets[player] = pick_target(self.targets)
 
         # Color new target
         fillAll(strip, TEAM_COLORS[player], self.targets[player])
@@ -250,14 +270,15 @@ if __name__ == '__main__':
             game = game_from_input()
 
             try:
-                # Repeating portion of the game
                 while True:
-
                     game.update()
                     
-                    if (exit):
+                    if (game.exit):
+                        print("GAME OVER\n")
+                        for i in range(0, game.num_players):
+                            print("Player " + str(i + 1) + " score: " + str(score[i]))
                         break
 
             except KeyboardInterrupt:
-                for target in range(0, NUM_TARGERTS):
+                for target in range(0, NUM_TARGETS - 1):
                     resetAll(strip)
