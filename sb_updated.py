@@ -61,53 +61,53 @@ strip.begin()
 
 
 # Define functions which animate LEDs in various ways.
-def color_wipe(strip, color, target, index, wait_ms, num_simeltaneous):
+def color_wipe(strip, color, target, index):
     """Wipe color across display a pixel at a time"""
     i = target*LED_PER_TARGET + index
 
     strip.setPixelColor(i, color)
     strip.show()
 
-    
-    time.sleep(wait_ms/(1000 * num_simeltaneous) )
-
 # Check Log
-def check_log(target):
+def check_log(target, duration):
     """Check log for duration between light changes"""
     if target in prev:
         return True
 
-    # Clear the log as the data has been seen twice by now
+    # Clear the log as the data has been seen while checking 2 targets by now
     prev.clear()
 
-    # Check if the value is being sent + update log
-    while (arduino.inWaiting()>0): 
-        # Get new information
-        val = int(arduino.readline())
+    start_time = time.time()
 
-        # Print value
-        print(str(val) + " hit")
+    while (time.time() - start_time < duration):
+        # Check if the value is being sent + update log
+        while (arduino.inWaiting()>0): 
+            # Get new information
+            val = int(arduino.readline())
 
-        # Check if target is in new info
-        if(val == target):
-            return True
+            # Print value
+            print(str(val) + " hit")
 
-        # Add info to temporary log
-        prev.append(val)
+            # Check if target is in new info
+            if(val == target):
+                return True
 
-        # Remove data after reading
-        arduino.flushInput()
+            # Add info to temporary log
+            prev.append(val)
+
+            # Remove data after reading
+            arduino.flushInput()
 
     return False
 	
-def fillAll(strip, color, target):
+def fill_all(strip, color, target):
     """Instantly change color of pixels in target range"""
     start = target*LED_PER_TARGET
     for i in range(start, start + LED_PER_TARGET):
         strip.setPixelColor(i, color)
     strip.show()
 
-def limitedInput(prompt, acceptableAnswers):
+def limited_input(prompt, acceptableAnswers):
     """Takes user input and reasks the user when an unacceptable answer is given"""
     while True:
         response = input(prompt)
@@ -116,7 +116,7 @@ def limitedInput(prompt, acceptableAnswers):
         else:
             print("Invalid input.")
     
-def generateColor():
+def generate_color():
     x = randint(1, 3)
     if x == 1:
         return RED
@@ -133,17 +133,17 @@ def pick_target(exceptions=[]):
     
     return x
 
-def resetAll(strip):
+def reset_all(strip):
     """Reset all of the LEDs in the smart box"""
     for target in range(0, NUM_TARGETS):
-            fillAll(strip, BLACK, target)
+            fill_all(strip, BLACK, target)
 
 
 def game_from_input():
-    n = int(limitedInput("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"], 
+    n = int(limited_input("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"], 
             ["1", "2", "3", "4", "5", "6", "7"])) - 1
 
-    target_length = int(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
+    target_length = float(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
 
     game_length = int(input("Time in seconds of game:\n"))
 
@@ -188,16 +188,17 @@ class Game:
         # Terminate when time expires
         current_time = time.time()
         if current_time - self.start_time > self.game_length:
-            resetAll(strip)
+            reset_all(strip)
             self.exit = True
 
     def standard_update(self):
         for i in range(0, self.num_players):
             # Update display
-            color_wipe(strip, BLACK, self.targets[i], self.index[i], self.target_length, self.num_players)
+            color_wipe(strip, BLACK, self.targets[i], self.index[i])
 
-            # Check for score
-            check = check_log(self.targets[i])
+            # Check for score for duration of wait time
+            duration = self.target_length/(1000 * self.num_players)
+            check = check_log(self.targets[i], duration)
 
             if(check):
                 print("Score!")
@@ -223,7 +224,7 @@ class Game:
 
     def reset(self, player):
         # Reset previous target
-        fillAll(strip, BLACK, self.targets[player])
+        fill_all(strip, BLACK, self.targets[player])
 
         # Pick new target
         if(self.front_five):
@@ -241,11 +242,14 @@ class Game:
                 self.targets[player] = pick_target(self.targets)
 
         # Color new target
-        fillAll(strip, TEAM_COLORS[player], self.targets[player])
+        if self.num_players == 1:
+            fill_all(strip, generate_color(), self.targets[player])
+        else:
+            fill_all(strip, TEAM_COLORS[player], self.targets[player])
 
         # Color next target (if preperation)
         if self.preperation:
-            fillAll(strip, TEAM_NEXT_COLORS[player], self.next_targets[player])
+            fill_all(strip, TEAM_NEXT_COLORS[player], self.next_targets[player])
 
         self.index[player] = 0
 
@@ -281,4 +285,4 @@ if __name__ == '__main__':
 
             except KeyboardInterrupt:
                 for target in range(0, NUM_TARGETS - 1):
-                    resetAll(strip)
+                    reset_all(strip)
