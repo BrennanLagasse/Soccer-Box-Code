@@ -37,7 +37,8 @@ GAMES = {
     "4" : " (4) ONE PLAYER - PREPERATION PLAYS \n",
     "5" : " (5) TWO PLAYER - SYNCHRONOUS \n",
     "6" : " (6) TWO PLAYER - ASYNCHRONOUS \n",
-    "7" : " (7) TWO PLAYER - PREPERATION PLAYS \n"
+    "7" : " (7) TWO PLAYER - PREPERATION PLAYS \n",
+    "8" : " (8) CUSTOM PATHS \n"
 }
 
 GAME_DATA = [
@@ -48,11 +49,17 @@ GAME_DATA = [
     [1,            False,        False,        False,           True        ], # 4
     [2,            False,        True,         False,           False       ], # 5
     [2,            False,        False,        False,           False       ], # 6
-    [2,            False,        False,        False,           True        ]  # 7
+    [2,            False,        False,        False,           True        ],  # 7
+    [1,            False,        False,        False,           False       ] # 8
+]
+
+GAME_PATH_DATA = [
+    # num_reps | reflect | path targets .... 
+    [3,         True,      [0, 1, 2, 3, 4, 5, 6, 7]],
+    [5,         False,     [0, 1, 7, 2, 6, 3, 5, 4]]
 ]
 
 # Global variables
-score = [0, 0]
 prev = []
 
 # Tnitialize and start RGB lights
@@ -81,7 +88,7 @@ def check_log(target, duration):
 
     while (time.time() - start_time < duration):
         # Check if the value is being sent + update log
-        while (arduino.inWaiting()>0): 
+        while (arduino.inWaiting()>0 and time.time() - start_time < duration): 
             # Get new information
             val = int(arduino.readline())
 
@@ -93,7 +100,8 @@ def check_log(target, duration):
                 return True
 
             # Add info to temporary log
-            prev.append(val)
+            if not val in prev:
+                prev.append(val)
 
             # Remove data after reading
             arduino.flushInput()
@@ -140,17 +148,22 @@ def reset_all(strip):
 
 
 def game_from_input():
-    n = int(limited_input("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"], 
-            ["1", "2", "3", "4", "5", "6", "7"])) - 1
+    n = int(limited_input("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"] + GAMES["8"], 
+            ["1", "2", "3", "4", "5", "6", "7", "8"])) - 1
+
+    path_data = []
+
+    if (n == 7):
+        path_data = GAME_PATH_DATA[int(input("Path number: \n"))]
 
     target_length = float(input("Time in seconds to hit target:\n")) / LED_PER_TARGET*1000 
 
-    game_length = int(input("Time in seconds of game:\n"))
+    game_length = float(input("Time in seconds of game:\n"))
 
-    return Game(target_length, game_length, GAME_DATA[n][0], GAME_DATA[n][1], GAME_DATA[n][2], GAME_DATA[n][3], GAME_DATA[n][4])
+    return Game(target_length, game_length, GAME_DATA[n][0], GAME_DATA[n][1], GAME_DATA[n][2], GAME_DATA[n][3], GAME_DATA[n][4], path_data)
 
 class Game:
-    def __init__(self, target_length, game_length, num_players=1, front_five=False, competitive=False, glancing_goals=False, preperation=False):
+    def __init__(self, target_length, game_length, num_players=1, front_five=False, competitive=False, glancing_goals=False, preperation=False, path=[]):
         # Set input variables
         self.target_length = target_length
         self.game_length = game_length
@@ -159,12 +172,18 @@ class Game:
         self.competitive = competitive
         self.glancing_goals = glancing_goals
         self.preperation = preperation
+        self.path_repeats = path[0]
+        self.path_reverse = path[1]
+        self.path = path[2]
+        self.path_direction = 1
+        self.path_position = 0
 
         # Create generic variables
         self.start_time = time.time()
         self.targets = [0]
         self.next_targets = [0]
         self.index = [0, 0]
+        self.score = [0, 0]
         self.exit = False
 
         # Pick initial target(s)
@@ -202,7 +221,7 @@ class Game:
 
             if(check):
                 print("Score!")
-                score[i] += 1
+                self.score[i] += 1
                 if(self.competitive):
                     self.reset(0)
                     self.reset(1)
@@ -219,15 +238,64 @@ class Game:
                 print("\n")
 
     def glancing_goals_update(self):
-        print("not done yet")
-        self.exit = True
+        # Set initial target
+        initial_target = 0
+        fill_all(strip, WHITE, initial_target)
+
+        # Wait until initial target hit
+        check = check_log(initial_target, time.time() - self.start_time - self.game_length )
+
+        if check:
+            # Array of colors for far targets
+            colors = [RED, GREEN, BLUE]
+
+            random.shuffle(colors)
+
+            # Color front targets
+            for i in range(0, 2):
+                fill_all(strip, colors[i], i + 3)
+
+            # Pick designated target
+            target_index = randint(3, 5)
+
+            # Color a back target with the indicator color
+            fill_all(strip, colors[target_index - 3], 1 + 6 * randint(0, 1))
+
+            # Check for score
+            duration = self.target_length/(1000 * 3)
+            check2 = check_log(self.targets[i], duration)
+
+            if(check2):
+                self.score[0] += 1
+            
+            reset_all(strip)
+
 
     def reset(self, player):
         # Reset previous target
         fill_all(strip, BLACK, self.targets[player])
 
         # Pick new target
-        if(self.front_five):
+        if(not self.path == []):
+            self.path_position += self.path_direction
+
+            if(self.path_position >= len(self.path)):
+                if(self.path_reverse):
+                    self.path_position -= 1
+                    self.path_direction = -1
+                else:
+                    self.path_position = 0
+                self.path_repeats -= 1
+            elif(self.path_position < 0):
+                self.path_position = 0
+                self.path_direction = 1
+                self.path_repeats -= 1
+            
+            if(self.path_repeats < 0):
+                self.exit = True
+
+            self.targets[player] = self.path[self.path_position]
+        elif(self.front_five):
             self.targets[player] = randint(2, 6)
         elif(self.preperation):
             self.targets[player] = self.next_targets[player]
@@ -252,6 +320,7 @@ class Game:
             fill_all(strip, TEAM_NEXT_COLORS[player], self.next_targets[player])
 
         self.index[player] = 0
+
 
 
 if __name__ == '__main__':
@@ -280,7 +349,7 @@ if __name__ == '__main__':
                     if (game.exit):
                         print("GAME OVER\n")
                         for i in range(0, game.num_players):
-                            print("Player " + str(i + 1) + " score: " + str(score[i]))
+                            print("Player " + str(i + 1) + " score: " + str(game.score[i]))
                         break
 
             except KeyboardInterrupt:
