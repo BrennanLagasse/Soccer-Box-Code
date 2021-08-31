@@ -32,7 +32,7 @@ void loop() {
     if(piezoVal[i] > threshold) {
       // Set state to triggered and send on message
       if(piezosTriggered[i] == false) {
-        sendData(i, true);
+        sendData(i);
         piezosTriggered[i] = true;
       }
 
@@ -43,9 +43,6 @@ void loop() {
       digitalWrite(ledPin[i], HIGH);  
     }
     else if(piezosTriggered[i] && m - triggerTime[i] > bounce) {
-      // Message pi that the piezo is no longer triggered
-      sendData(i, false);
-
       // Turn off LED
       digitalWrite(ledPin[i], LOW);
 
@@ -57,14 +54,6 @@ void loop() {
   
 }
 
-void sendData(int pin, bool triggered) {
-  Serial.print(pin);
-  Serial.print(" ");
-
-  if(triggered) {
-    Serial.println("ON");
-  }
-  else {
-    Serial.println("OFF");
-  }
+void sendData(int pin) {
+  Serial.println(pin);
 }
