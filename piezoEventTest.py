@@ -15,7 +15,7 @@ piezoceramics = []
 
 for x in range(0, NUM_TARGERTS):
     # Create Piezo object, pull down
-    piezoceramics.append(Button(PIEZOCERAMIC_PINS[x], None, True)) 
+    piezoceramics.append(Button(PIEZOCERAMIC_PINS[x], True)) 
     
     # ^ None = floating
     # ^ True = v not reversed, None = ?
