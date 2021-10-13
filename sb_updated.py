@@ -163,7 +163,9 @@ def game_from_input():
     return Game(target_length, game_length, GAME_DATA[n][0], GAME_DATA[n][1], GAME_DATA[n][2], GAME_DATA[n][3], GAME_DATA[n][4], path_data)
 
 class Game:
-    def __init__(self, target_length, game_length, num_players=1, front_five=False, competitive=False, glancing_goals=False, preperation=False, path=[]):
+    def __init__(self, target_length, game_length, num_players=1, front_five=False, competitive=False, 
+    glancing_goals=False, preperation=False, use_path=False, path=[]):
+
         # Set input variables
         self.target_length = target_length
         self.game_length = game_length
@@ -172,11 +174,13 @@ class Game:
         self.competitive = competitive
         self.glancing_goals = glancing_goals
         self.preperation = preperation
-        self.path_repeats = path[0]
-        self.path_reverse = path[1]
-        self.path = path[2]
-        self.path_direction = 1
-        self.path_position = 0
+        self.use_path = use_path
+        if(use_path):
+            self.path_repeats = path[0]
+            self.path_reverse = path[1]
+            self.path = path[2]
+            self.path_direction = 1
+            self.path_position = 0
 
         # Create generic variables
         self.start_time = time.time()
@@ -234,8 +238,8 @@ class Game:
 
             if(self.index[i] >= LED_PER_TARGET):
                 self.reset(i)
-                print(self.targets[i])
-                print("\n")
+                # print(self.targets[i])
+                # print("\n")
 
     def glancing_goals_update(self):
         # Set initial target
@@ -276,7 +280,7 @@ class Game:
         fill_all(strip, BLACK, self.targets[player])
 
         # Pick new target
-        if(not self.path == []):
+        if(self.use_path):
             self.path_position += self.path_direction
 
             if(self.path_position >= len(self.path)):
@@ -326,7 +330,14 @@ class Game:
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    with serial.Serial("/dev/ttyACM0", 9600, timeout=1) as arduino:
+    # All working. Use this as test
+    # for i in range(0, 8):
+        # fill_all(strip, BLUE, i)
+        # time.sleep(1)
+        # reset_all(strip)
+
+    # "/dev/ttyACM0" at home
+    with serial.Serial("/dev/ttyUSB0", 9600, timeout=1) as arduino:
         # Wait for serial to open
         time.sleep(0.1) 
 
