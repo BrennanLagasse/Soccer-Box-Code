@@ -1,57 +1,52 @@
-const int numPiezos = 6;
-const int piezoPin [numPiezos] = {A0, A1, A2, A3, A4, A5};
-const int ledPin [numPiezos] = {2, 4, 7, 8, 12, 13};
-int piezoVal [numPiezos] = {0, 0, 0, 0, 0, 0};
+// Title:     Piezo Event Handler
+// Purpose:   Sends messages via serial communication when targets are triggered
+// Structure: Averages piezo values over 3 trials and compares to a set threshold. This methodology should discount rapid spikes in electricity
+
+// Define piezoceramics
+const int numPiezos = 8;
+const int piezoPin [numPiezos] = {A0, A1, A2, A3, A4, A5, A6, A7};
+
+// Track data on piezoceramics
+int piezoVal [numPiezos][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 int triggerTime [numPiezos] = {0, 0, 0, 0, 0, 0};
-bool piezosTriggered [numPiezos] = {false, false, false, false, false, false};
+
+// Variable target thresholds as a potential solution
+const int thresholds [numPiezos] = {75, 75, 75, 75, 75, 75, 75, 75};
 
 void setup() {
-  // put your setup code here, to run once:
+  // Set up all of the piezoceramics as analog inputs
   for(int i = 0; i < numPiezos; i++) {
     pinMode(piezoPin[i], INPUT);
   }
-  for(int i = 0; i < numPiezos; i++) {
-    pinMode(ledPin[i], OUTPUT);
-  }
 
-  // Ensure serial frequency is the same for the pi
+  // Start Serial - must by the same frequency for Pi and Arduino (9600)
   Serial.begin(9600);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  const int threshold = 75;
   const int bounce = 100;
   int m = millis();
 
+  // Iterate through all pressure sensors
+  //If the average value of a sensor over three checks is greater than the threshold, message that the target has been hit.
   for(int i = 0; i < numPiezos; i++) {
-    // Read value
-    piezoVal[i] = analogRead(piezoPin[i]);
-
-    // Return if passes threshold
-    if(piezoVal[i] > threshold) {
-      // Set state to triggered and send on message
-      if(piezosTriggered[i] == false) {
-        sendData(i);
-        piezosTriggered[i] = true;
-      }
-
-      // Update timer
-      triggerTime[i] = m;
-
-      // Turn on LED
-      digitalWrite(ledPin[i], HIGH);  
-    }
-    else if(piezosTriggered[i] && m - triggerTime[i] > bounce) {
-      // Turn off LED
-      digitalWrite(ledPin[i], LOW);
-
-      // Set state to not triggered
-      piezosTriggered[i] = false;
-    }
+    // Shift values over to clear space and delete the oldest value
+    piezoVal[i][2] = piezoVal[i][1];
+    piezoVal[i][1] = piezoVal[i][0];
     
+    // Read new value
+    piezoVal[i][0] = analogRead(piezoPin[i]);
+
+    // Find the average over the past three checks
+    double piezoAverage = (piezoVal[i][0] + piezoVal[i][1] + piezoVal[i][2]) / 3.0;
+
+    // Determines if the piezoceramic value is above the threshold
+    if(piezoAverage > thresholds[i]) {
+      
+      // Send the message
+      sendData(i);
+    }
   }
-  
 }
 
 void sendData(int pin) {
