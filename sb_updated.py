@@ -60,6 +60,7 @@ GAME_PATH_DATA = [
 ]
 
 # Global variables
+# Previous is the log of targets that have been sent to the arduino
 prev = []
 
 # Tnitialize and start RGB lights
@@ -88,11 +89,18 @@ def check_log(target, duration):
 
     while (time.time() - start_time < duration):
         # Check if the value is being sent + update log
-        while (arduino.inWaiting()>0 and time.time() - start_time < duration): 
+        if (arduino.inWaiting() > 0): 
             # Get new information
-            val = int(arduino.readline())
+            line = arduino.readline()
+
+            # Remove data after reading
+            arduino.flushInput()
+
+            # Convert to integer
+            val = int(line)
 
             # Print value
+            print(line)
             print(str(val) + " hit")
 
             # Check if target is in new info
@@ -100,11 +108,8 @@ def check_log(target, duration):
                 return True
 
             # Add info to temporary log
-            if not val in prev:
+            if not (val in prev):
                 prev.append(val)
-
-            # Remove data after reading
-            arduino.flushInput()
 
     return False
 	
@@ -184,7 +189,10 @@ class Game:
 
         # Create generic variables
         self.start_time = time.time()
+
+        # Current targets that the player needs to hit
         self.targets = [0]
+
         self.next_targets = [0]
         self.index = [0, 0]
         self.score = [0, 0]
@@ -231,15 +239,11 @@ class Game:
                     self.reset(1)
                 else:
                     self.reset(i)
-                continue
-
 
             self.index[i] += 1
 
             if(self.index[i] >= LED_PER_TARGET):
                 self.reset(i)
-                # print(self.targets[i])
-                # print("\n")
 
     def glancing_goals_update(self):
         # Set initial target
@@ -315,9 +319,11 @@ class Game:
 
         # Color new target
         if self.num_players == 1:
-            fill_all(strip, generate_color(), self.targets[player])
+            # fill_all(strip, generate_color(), self.targets[player])
+            print("")
         else:
-            fill_all(strip, TEAM_COLORS[player], self.targets[player])
+            # fill_all(strip, TEAM_COLORS[player], self.targets[player])
+            print("")
 
         # Color next target (if preperation)
         if self.preperation:
