@@ -8,10 +8,9 @@ const int piezoPin [numPiezos] = {A0, A1, A2, A3, A4, A5, A6, A7};
 
 // Track data on piezoceramics
 int piezoVal [numPiezos][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
-int triggerTime [numPiezos] = {0, 0, 0, 0, 0, 0};
 
 // Variable target thresholds as a potential solution
-const int thresholds [numPiezos] = {75, 75, 75, 75, 75, 75, 75, 75};
+const int thresholds [numPiezos] = {50, 50, 50, 50, 50, 50, 50, 50};
 
 void setup() {
   // Set up all of the piezoceramics as analog inputs
@@ -24,12 +23,12 @@ void setup() {
 }
 
 void loop() {
-  const int bounce = 100;
   int m = millis();
 
   // Iterate through all pressure sensors
   //If the average value of a sensor over three checks is greater than the threshold, message that the target has been hit.
   for(int i = 0; i < numPiezos; i++) {
+    
     // Shift values over to clear space and delete the oldest value
     piezoVal[i][2] = piezoVal[i][1];
     piezoVal[i][1] = piezoVal[i][0];
@@ -42,13 +41,14 @@ void loop() {
 
     // Determines if the piezoceramic value is above the threshold
     if(piezoAverage > thresholds[i]) {
-      
       // Send the message
-      sendData(i);
+      Serial.println(i);
     }
   }
 }
 
-void sendData(int pin) {
-  Serial.println(pin);
+void averageCheck(int average) {
+  if(average > 20) {
+    Serial.print(average);
+  }
 }

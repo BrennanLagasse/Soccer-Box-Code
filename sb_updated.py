@@ -1,3 +1,5 @@
+# Most recent code as of 11/19/2021
+
 import time
 import serial
 from random import random
@@ -96,8 +98,14 @@ def check_log(target, duration):
             # Remove data after reading
             arduino.flushInput()
 
+            print(line)
+
             # Convert to integer
-            val = int(line)
+            try:
+                val = int(line)
+            except:
+                val = -1
+                print("Incorrect string")
 
             # Print value
             print(line)
