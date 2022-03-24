@@ -98,18 +98,13 @@ def check_log(target, duration):
             # Remove data after reading
             arduino.flushInput()
 
-            print(line)
-
             # Convert to integer
             try:
                 val = int(line)
+                print(val)
             except:
+                # Silently removes value
                 val = -1
-                print("Incorrect string")
-
-            # Print value
-            print(line)
-            print(str(val) + " hit")
 
             # Check if target is in new info
             if(val == target):
