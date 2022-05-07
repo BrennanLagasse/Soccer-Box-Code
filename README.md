@@ -1,3 +1,3 @@
 # Soccer-Box-Code
 
-All of the code for the soccer box room that takes input from piezoceramic sensors and outputs led and numeric data for various games
+All of the software to run different soccer games with pressure sensative-light up targets
