@@ -1,16 +1,17 @@
 // Title:     Piezo Event Handler
 // Purpose:   Sends messages via serial communication when targets are triggered
-// Structure: Averages piezo values over 3 trials and compares to a set threshold. This methodology should discount rapid spikes in electricity
+// Structure: Simeltaneously check all 7 piezoceramics for a hit and report back with a max pool algorithm
 
 // Define piezoceramics
 const int numPiezos = 8;
 const int piezoPin [numPiezos] = {A0, A1, A2, A3, A4, A5, A6, A7};
+const float bounceTime = 0.25;
 
-// Track data on piezoceramics
-int piezoVal [numPiezos][3] = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
+// Track when targets are hit to incorporate bounce
+float hitTime [numPiezos] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-// Variable target thresholds as a potential solution
-const int thresholds [numPiezos] = {50, 50, 50, 50, 50, 50, 50, 50};
+// Global minimum value to consider triggered
+const int threshold = 300;
 
 void setup() {
   // Set up all of the piezoceramics as analog inputs
@@ -23,32 +24,14 @@ void setup() {
 }
 
 void loop() {
-  int m = millis();
 
   // Iterate through all pressure sensors
-  //If the average value of a sensor over three checks is greater than the threshold, message that the target has been hit.
+  // If a single readout exceeds the threshold, mark the target as triggered (max pool testing indicated high false-positive outliers are extremely rare)
+  // Bounce time of 0.25 seconds
   for(int i = 0; i < numPiezos; i++) {
-    
-    // Shift values over to clear space and delete the oldest value
-    piezoVal[i][2] = piezoVal[i][1];
-    piezoVal[i][1] = piezoVal[i][0];
-    
-    // Read new value
-    piezoVal[i][0] = analogRead(piezoPin[i]);
-
-    // Find the average over the past three checks
-    double piezoAverage = (piezoVal[i][0] + piezoVal[i][1] + piezoVal[i][2]) / 3.0;
-
-    // Determines if the piezoceramic value is above the threshold
-    if(piezoAverage > thresholds[i]) {
-      // Send the message
+    if((analogRead(piezoPin[i]) > threshold) && (millis() - hitTime[i] > bounceTime*1000)) {
       Serial.println(i);
+      hitTime[i] = millis();
     }
-  }
-}
-
-void averageCheck(int average) {
-  if(average > 20) {
-    Serial.print(average);
   }
 }
