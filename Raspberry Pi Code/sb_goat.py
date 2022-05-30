@@ -104,7 +104,7 @@ def check_log(target, duration):
                 print(val)
             except:
                 # Silently removes value
-                val = -1
+                print("WARNING: Bad input from arduino")
 
             # Check if target is in new info
             if(val == target):
@@ -138,7 +138,6 @@ def generate_color():
         return RED
     elif x == 2:
         return GREEN
-    
     return BLUE
 
 def pick_target(exceptions=[]):
@@ -227,16 +226,15 @@ class Game:
 
     def standard_update(self):
         for i in range(0, self.num_players):
-            # Update display
-            color_wipe(strip, BLACK, self.targets[i], self.index[i])
-
             # Check for score for duration of wait time
             duration = self.target_length/(1000 * self.num_players)
             check = check_log(self.targets[i], duration)
+            color_wipe(strip, TEAM_COLORS[i], self.targets[i], self.index[i])
 
             if(check):
                 print("Score!")
                 self.score[i] += 1
+
                 if(self.competitive):
                     self.reset(0)
                     self.reset(1)
@@ -340,10 +338,10 @@ if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
     # All working. Use this as test
-    # for i in range(0, 8):
-        # fill_all(strip, BLUE, i)
-        # time.sleep(1)
-        # reset_all(strip)
+    for i in range(0, 8):
+        fill_all(strip, BLUE, i)
+        time.sleep(1)
+        reset_all(strip)
 
     # "/dev/ttyACM0" at home
     with serial.Serial("/dev/ttyUSB0", 9600, timeout=1) as arduino:

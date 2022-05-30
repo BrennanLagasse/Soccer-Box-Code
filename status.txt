@@ -1,0 +1,13 @@
+Status Check:
+
+Complete:
+ - All piezoceramics operate correctly
+ - Arduino messages Raspberry Pi once when a target is hit with the target number
+ - Raspberry Pi recieves and notes the number the Arduino sends it in real time
+
+To Do:
+ - Ensure that game logic registers that a shot was made and correctly responds
+ - Ensure all games work as intended
+ - Develop predefined path games
+ - Print scores to OLED display
+ - Send scores to google sheet over wifi
