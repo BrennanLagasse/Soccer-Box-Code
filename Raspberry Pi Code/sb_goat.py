@@ -74,8 +74,6 @@ strip.begin()
 # Define functions which animate LEDs in various ways.
 def color_wipe(strip, color, target, index):
     """Wipe color across display a pixel at a time"""
-    if index == 0:
-        fill_all(strip, color, target)
 
     i = target*LED_PER_TARGET + index
 
@@ -330,10 +328,10 @@ class Game:
 
         # Color new target
         if self.num_players == 1:
-            # fill_all(strip, generate_color(), self.targets[player])
+            fill_all(strip, generate_color(), self.targets[player])
             print("")
         else:
-            # fill_all(strip, TEAM_COLORS[player], self.targets[player])
+            fill_all(strip, TEAM_COLORS[player], self.targets[player])
             print("")
 
         # Color next target (if preperation)
