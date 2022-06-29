@@ -1,4 +1,4 @@
-# Most recent code as of 11/19/2021
+# Most recent code as of 6/29/2022
 
 import time
 import serial
@@ -40,7 +40,8 @@ GAMES = {
     "5" : " (5) TWO PLAYER - SYNCHRONOUS \n",
     "6" : " (6) TWO PLAYER - ASYNCHRONOUS \n",
     "7" : " (7) TWO PLAYER - PREPERATION PLAYS \n",
-    "8" : " (8) CUSTOM PATHS \n"
+    "8" : " (8) CUSTOM PATHS \n",
+    "9" : " (9) LED TEST \n"
 }
 
 GAME_DATA = [
@@ -73,9 +74,12 @@ strip.begin()
 # Define functions which animate LEDs in various ways.
 def color_wipe(strip, color, target, index):
     """Wipe color across display a pixel at a time"""
+    if index == 0:
+        fill_all(strip, color, target)
+
     i = target*LED_PER_TARGET + index
 
-    strip.setPixelColor(i, color)
+    strip.setPixelColor(i, BLACK)
     strip.show()
 
 # Check Log
@@ -155,10 +159,16 @@ def reset_all(strip):
 
 
 def game_from_input():
-    n = int(limited_input("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"] + GAMES["8"], 
-            ["1", "2", "3", "4", "5", "6", "7", "8"])) - 1
+    n = int(limited_input("Select a game mode:\n" + GAMES["1"] + GAMES["2"] + GAMES["3"] + GAMES["4"] + GAMES["5"] + GAMES["6"] + GAMES["7"] + GAMES["8"] + GAMES["9"], 
+            ["1", "2", "3", "4", "5", "6", "7", "8", "9"])) - 1
 
     path_data = []
+
+    if (n == 8): 
+        for i in range(0, 8):
+            fill_all(strip, BLUE, i)
+            time.sleep(1)
+            reset_all(strip)
 
     if (n == 7):
         path_data = GAME_PATH_DATA[int(input("Path number: \n"))]
@@ -336,12 +346,6 @@ class Game:
 
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
-
-    # All working. Use this as test
-    for i in range(0, 8):
-        fill_all(strip, BLUE, i)
-        time.sleep(1)
-        reset_all(strip)
 
     # "/dev/ttyACM0" at home
     with serial.Serial("/dev/ttyUSB0", 9600, timeout=1) as arduino:
