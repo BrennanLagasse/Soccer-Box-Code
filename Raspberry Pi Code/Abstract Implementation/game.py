@@ -28,25 +28,58 @@ class Game:
         self.score = 0
         self.lights = lights
         self.light_index = 0
+        self.target = 0
+        self.next_target = 0
 
-        if self.player == 1:
-            self.color = self.RED
+        if self.player == 0:
+            self.color_primary = self.RED
+            self.color_alternate = self.ORANGE
         else:
-            self.color = self.BLUE
+            self.color_primary = self.BLUE
+            self.color_alternate = self.GREEN
 
-    def updateLightsCountdown(self, target):
-        """Turns off the next light in sequence on the target"""
-        self.lights.color_wipe(self.room, target, self.light_index)
-        self.light_index += 1
+    def setTarget(self, target):
+        self.target = target
+    
+    def getTarget(self):
+        return self.target
 
+    def setNextTarget(self, next_target):
+        self.next_target = next_target
+
+    def getNextTarget(self):
+        return self.next_target
+
+    def addPoint(self):
+        self.score += 1
+
+    def getScore(self):
+        return self.score
+    
     def checkCountdownEnded(self):
         """Returns if the light countdown has ended"""
         return self.i >= self.LED_PER_TARGET
 
+    def resetCounter(self):
+        self.light_index = 0
+
+    def updateLightsCountdown(self):
+        """Turns off the next light in sequence on the target"""
+        self.lights.color_wipe(self.room, self.target, self.light_index)
+        self.light_index += 1
+
     def colorTarget(self, color, target):
         """Lights up a target in the given color"""
-        self.lights.fill_target(color, self.room, target)
+        self.lights.fill_target(color, target)
+
+    def colorTargetPrimary(self, target):
+        """Lights up a target in the primary theme color"""
+        self.lights.fill_target(self.color_primary, target) 
+
+    def colorTargetAlternate(self, target):
+        """Lights up a target in the alternate theme color"""
+        self.lights.fill_target(self.color_alternate, target)
 
     def startWinnerLights(self):
         """Turns on all of the lights in the player's color"""
-        self.lights.fill_room(self.color, self.room)
+        self.lights.fill_room(self.color_primary, self.room)

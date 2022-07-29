@@ -22,15 +22,15 @@ class LightStrip:
         self.strip = Adafruit_NeoPixel(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
         self.strip.begin()
 
-    def color_wipe(self, room, target, index):
+    def color_wipe(self, target, index):
         """Erase color at the given index"""
-        i = (room*self.NUM_TARGETS_ROOM + target)*self.LED_PER_TARGET + index
+        i = target*self.LED_PER_TARGET + index
         self.strip.setPixelColor(i, self.BLACK)
         self.strip.show()
 
-    def fill_target(self, color, room, target):
+    def fill_target(self, color, target):
         """Instantly change color of all lights in target range"""
-        start = (room*self.NUM_TARGETS_ROOM + target)*self.LED_PER_TARGET
+        start = target*self.LED_PER_TARGET
         for i in range(start, start + self.LED_PER_TARGET):
             self.strip.setPixelColor(i, color)
         self.strip.show()
@@ -44,5 +44,5 @@ class LightStrip:
 
     def reset_all(self):
         """Reset all of the LEDs in the smart box"""
-        for target in range(0, self.NUM_TARGETS):
-                self.fill_all(self.strip, self.BLACK, target)
+        for target in range(0, self.NUM_TARGETS_ROOM * self.NUM_ROOMS):
+                self.fill_target(self.strip, self.BLACK, target)
