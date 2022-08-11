@@ -29,5 +29,10 @@ if __name__ == '__main__':
         print("Time expired")
 
     except KeyboardInterrupt:
+<<<<<<< HEAD:Raspberry Pi Code/Abstract Implementation/standard_game_1p.py
         print("Interrupt")
         game_manager.end()
+=======
+        for target in range(0, NUM_TARGETS - 1):
+            reset_all(strip)
+>>>>>>> 36ede443088af4a8bafecf87da17ae2ccbc1bf9f:Raspberry Pi Code/Abstract Implementation/games/standard_game_1p.py
