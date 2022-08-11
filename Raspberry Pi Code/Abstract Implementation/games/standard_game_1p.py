@@ -23,7 +23,6 @@ if __name__ == '__main__':
     try:
         while not game_manager.timeExpired():
             # WIP Read values from arduinos and store in log. Build in wait here
-            target_log = []
             game_manager.update()
         game_manager.end()
         print("Time expired")
