@@ -56,7 +56,7 @@ class GameManager:
         # Notifies the app that the system is starting
         print("START")
     
-    def update(self):
+    def update(self, newTargetPicker):
         """Runs all game associated actions, decision making, and SSH updates (NOT DONE)"""
 
         target_log = []
@@ -71,9 +71,8 @@ class GameManager:
         for room in range(0, len(self._games)):
             game = self._games[room][0]
             if game.getTarget() in target_log:
-                game.addPoint()
-                game.setTarget(self.pickRandomTarget(room, [game.getTarget()]))
-                game.resetCounter()
+                self.newTargetPicker(game)
+                
 
         # Update lights
         for room in range(0, len(self._games)):
@@ -98,6 +97,11 @@ class GameManager:
             x = room*self.NUM_TARGETS_PER_ROOM + randint(0, self.NUM_TARGETS_PER_ROOM - 1)
 
         return x
+    
+    def pickNextTarget(self, game):
+        game.addPoint()
+        game.setTarget(self.pickRandomTarget(room, [game.getTarget()]))
+        game.resetCounter()
 
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
