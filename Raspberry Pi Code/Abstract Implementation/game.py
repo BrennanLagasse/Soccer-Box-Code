@@ -1,12 +1,14 @@
 # Class that stores all data and functionality related to a single player
 
 from rpi_ws281x import *
+import time
 
 class Game:
 
     LED_PER_TARGET = 33
     NUM_TARGETS = 8
 
+    BLACK = Color(0,0,0)
     RED = Color(255, 0, 0)
     GREEN = Color(0, 255, 0)
     BLUE = Color(0, 0, 255)
@@ -30,13 +32,12 @@ class Game:
             self.color_primary = self.BLUE
             self.color_alternate = self.GREEN
 
+    def getRoom(self):
+        return self.room
+
     def setTarget(self, target):
-        try:
-            self.target = int(target)
-            self.colorTargetPrimary(target)
-        except:
-            print("Invalid target")
-            print(self.target)
+        self.target = target
+        self.colorTargetPrimary()
     
     def getTarget(self):
         return self.target
@@ -55,6 +56,7 @@ class Game:
         return self.score
 
     def reportScore(self):
+        """Prints out a string formatted for the app to read as [s] [room] [player] [score]"""
         print("s " + str(self.room) + " " + str(self.player) + " " + str(self.score))
     
     def checkCountdownEnded(self):
@@ -73,14 +75,23 @@ class Game:
         """Lights up a target in the given color"""
         self.lights.fillTarget(color, target)
 
-    def colorTargetPrimary(self, target):
-        """Lights up a target in the primary theme color"""
-        self.lights.fillTarget(self.color_primary, target) 
+    def resetTarget(self, target):
+        """Sets a target to black"""
+        self.lights.fillTarget(self.BLACK, target)
 
-    def colorTargetAlternate(self, target):
+    def colorTargetPrimary(self):
+        """Lights up a target in the primary theme color"""
+        self.lights.fillTarget(self.color_primary, self.target) 
+
+    def colorTargetAlternate(self):
         """Lights up a target in the alternate theme color"""
-        self.lights.fillTarget(self.color_alternate, target)
+        self.lights.fillTarget(self.color_alternate, self.next_target)
 
     def startWinnerLights(self):
-        """Turns on all of the lights in the player's color"""
-        self.lights.fillRoom(self.color_primary, self.room)
+        """Flashes all of the lights in the player's color twice then turns them off"""
+        for i in range(2):
+            self.lights.fillRoom(self.color_primary, self.room)
+            time.sleep(0.5)
+            self.lights.resetAll()
+            time.sleep(0.5)
+        

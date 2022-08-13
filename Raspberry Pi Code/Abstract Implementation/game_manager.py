@@ -21,9 +21,14 @@ class GameManager:
 
         # Get the key starting information from the app
         # left out for now
-        self.ROOMS = [0]
-        self.TARGET_TIME = 5
-        self.GAME_TIME = 60
+
+        # Format: Number of rooms, r1, ... , rn, target time, game time
+        num_rooms = int(input())
+        self.ROOMS = []
+        for i in range(num_rooms):
+            self.ROOMS.append(int(input))
+        self.TARGET_TIME = int(input())
+        self.GAME_TIME = int(input())
 
         # Create and store serial access
         self.serial_connections = []
@@ -71,7 +76,7 @@ class GameManager:
         for room in range(0, len(self._games)):
             game = self._games[room][0]
             if game.getTarget() in target_log:
-                self.newTargetPicker(game)
+                newTargetPicker(game, True)
                 
 
         # Update lights
@@ -83,8 +88,7 @@ class GameManager:
 
             # Update target if all lights are out
             if game.checkCountdownEnded():
-                game.setTarget(self.pickRandomTarget(room, [game.getTarget()]))
-                game.resetCounter()
+                newTargetPicker(game, False)
 
         # Wait
         time.sleep(self.TARGET_TIME / self.LED_PER_TARGET)
@@ -98,9 +102,12 @@ class GameManager:
 
         return x
     
-    def pickNextTarget(self, game):
-        game.addPoint()
-        game.setTarget(self.pickRandomTarget(room, [game.getTarget()]))
+    def pickNextTarget(self, game, score):
+        """Selects new targets and updates score based on boolean score"""
+        if score:
+            game.addPoint()
+        game.resetTarget(game.getTarget())
+        game.setTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))
         game.resetCounter()
 
     def timeExpired(self):
@@ -136,8 +143,9 @@ class GameManager:
                     self._games[r][1].startWinnerLights()
 
         # Sends out final scores
-        for game in self._games:
-            game.reportScore()
+        for room in self._games:
+            for game in room:
+                game.reportScore()
         
         # Notifies the app that the system is terminated
         print("END")

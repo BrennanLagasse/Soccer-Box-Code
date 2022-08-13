@@ -13,7 +13,7 @@ class StandardOnePlayerGame(GameManager):
             self._games[room][0].setTarget(super().pickRandomTarget(room))
     
     def update(self):
-        super().update()
+        super().update(game_manager.pickNextTarget)
 
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
@@ -25,7 +25,6 @@ if __name__ == '__main__':
             # WIP Read values from arduinos and store in log. Build in wait here
             game_manager.update()
         game_manager.end()
-        print("Time expired")
 
     except KeyboardInterrupt:
         print("Interrupt")
