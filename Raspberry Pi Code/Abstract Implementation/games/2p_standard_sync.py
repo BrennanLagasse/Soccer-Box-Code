@@ -4,33 +4,22 @@ from game_manager import GameManager
 
 NUM_PLAYERS = 1
 
-class OnePlayerNextGame(GameManager):
+class StandardOnePlayerGame(GameManager):
+    """Standard Game"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
 
         # Pick initial targets
         for room in range(0, len(self._games)):
-            game = self._games[room][0]
-            game.setTarget(super().pickRandomTarget(room))
-            game.setNextTarget(super().pickRandomTarget(room, {game.getTarget()}))
+            self._games[room][0].setTarget(super().pickRandomTarget(room))
     
     def update(self):
-        super().update(self.pickNextTarget)
-
-    def pickNextTarget(self, game, score):
-        if score:
-            game.addPoint()
-        game.resetTarget(game.getTarget())
-        game.setTarget(game.getNextTarget())
-        game.setNextTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))
-        game.colorTargetAlternate()
-        game.resetCounter()
-
+        super().update(game_manager.pickNextTarget)
 
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    game_manager = OnePlayerNextGame()
+    game_manager = StandardOnePlayerGame()
 
     try:
         while not game_manager.timeExpired():

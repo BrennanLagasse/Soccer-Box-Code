@@ -5,6 +5,7 @@ from game_manager import GameManager
 NUM_PLAYERS = 1
 
 class StandardOnePlayerGame(GameManager):
+    """Standard Game"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
 
