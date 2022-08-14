@@ -78,9 +78,10 @@ class GameManager:
 
         # Check all values
         for room in range(0, len(self._games)):
-            game = self._games[room][0]
-            if game.getTarget() in target_log:
-                newTargetPicker(game, True)
+            for i in range(self.num_players):
+                game = self._games[room][i]
+                if game.getTarget() in target_log:
+                    newTargetPicker(game, True, self._games[room][(i+1) % 2])
                 
 
         # Update lights
@@ -106,7 +107,7 @@ class GameManager:
 
         return x
     
-    def pickNextTarget(self, game, score):
+    def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
         if score:
             game.addPoint()
