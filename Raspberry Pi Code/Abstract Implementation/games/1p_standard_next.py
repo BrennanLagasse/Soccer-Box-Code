@@ -18,7 +18,7 @@ class OnePlayerNextGame(GameManager):
     def update(self):
         super().update(self.pickNextTarget)
 
-    def pickNextTarget(self, game, score):
+    def pickNextTarget(self, game, score, other_game=None):
         if score:
             game.addPoint()
         game.resetTarget(game.getTarget())

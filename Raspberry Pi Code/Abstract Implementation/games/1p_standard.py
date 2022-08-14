@@ -14,7 +14,7 @@ class StandardOnePlayerGame(GameManager):
             self._games[room][0].setTarget(super().pickRandomTarget(room))
     
     def update(self):
-        super().update(game_manager.pickNextTarget)
+        super().update(super().pickNextTarget)
 
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
