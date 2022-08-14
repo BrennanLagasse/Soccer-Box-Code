@@ -23,12 +23,16 @@ class GameManager:
         # left out for now
 
         # Format: Number of rooms, r1, ... , rn, target time, game time
-        num_rooms = int(input())
+        a = input()
+        num_rooms = int(a)
         self.ROOMS = []
         for i in range(num_rooms):
-            self.ROOMS.append(int(input))
-        self.TARGET_TIME = int(input())
-        self.GAME_TIME = int(input())
+            a = input()
+            self.ROOMS.append(int(a))
+        a = input()
+        self.TARGET_TIME = int(a)
+        a = input()
+        self.GAME_TIME = int(a)
 
         # Create and store serial access
         self.serial_connections = []

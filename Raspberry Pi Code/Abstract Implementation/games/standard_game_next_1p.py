@@ -15,9 +15,9 @@ class OnePlayerNextGame(GameManager):
             game.setNextTarget(super().pickRandomTarget(room, {game.getTarget()}))
     
     def update(self):
-        super().update(self.newTargetPicker)
+        super().update(self.pickNextTarget)
 
-    def newTargetPicker(self, game, score):
+    def pickNextTarget(self, game, score):
         if score:
             game.addPoint()
         game.resetTarget(game.getTarget())
