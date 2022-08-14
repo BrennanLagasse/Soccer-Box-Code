@@ -68,6 +68,20 @@ class GameManager:
     def update(self, newTargetPicker):
         """Runs all game associated actions, decision making, and SSH updates (NOT DONE)"""
 
+        # Get log of targets that where hit
+        target_log = self.getTargetLog()
+
+        # Check for valid hits and respond
+        self.checkTargets(target_log, newTargetPicker)   
+
+        # Update lights and reset expired targets
+        self.standardLightUpdate(newTargetPicker)
+
+        # Wait
+        time.sleep(self.TARGET_TIME / self.LED_PER_TARGET)
+
+    def getTargetLog(self):
+        """Get a list of all the targets to check for"""
         target_log = []
 
         for i in range(0, len(self.serial_connections)):
@@ -76,15 +90,18 @@ class GameManager:
                 target_log.append(line)
                 print(line)
 
-        # Check all values
+        return target_log
+
+    def checkTargets(self, target_log, newTargetPicker):
+        """Checks and manages target hits. Override when player has multiple active targets"""
         for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if game.getTarget() in target_log:
                     newTargetPicker(game, True, self._games[room][(i+1) % 2])
-                
 
-        # Update lights
+    def standardLightUpdate(self, newTargetPicker):
+        """Does countdown for target in each game and resets when timer ends. Override for other"""
         for room in range(0, len(self._games)):
             game = self._games[room][0]
 
@@ -95,8 +112,6 @@ class GameManager:
             if game.checkCountdownEnded():
                 newTargetPicker(game, False)
 
-        # Wait
-        time.sleep(self.TARGET_TIME / self.LED_PER_TARGET)
 
     def pickRandomTarget(self, room, exceptions=[]):
         """Pick a target from a room excluding given targets"""
