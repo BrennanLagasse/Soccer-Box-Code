@@ -98,7 +98,11 @@ class GameManager:
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if game.getTarget() in target_log:
-                    newTargetPicker(game, True, self._games[room][(i+1) % 2])
+                    if(self.num_players == 1):
+                        newTargetPicker(game, True, None)
+                    else:
+                        newTargetPicker(game, True, self._games[room][(i+1) % 2])
+                    
 
     def standardLightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
@@ -110,7 +114,10 @@ class GameManager:
 
             # Update target if all lights are out
             if game.checkCountdownEnded():
-                newTargetPicker(game, False)
+                if(self.num_players == 1):
+                    newTargetPicker(game, False, None)
+                else:
+                    newTargetPicker(game, False, self.games[game.getRoom()[(self.getPlayer() + 1) % 2]])
 
 
     def pickRandomTarget(self, room, exceptions=[]):

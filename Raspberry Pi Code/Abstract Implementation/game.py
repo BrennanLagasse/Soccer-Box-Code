@@ -65,6 +65,9 @@ class Game:
     def reportScore(self):
         """Prints out a string formatted for the app to read as [s] [room] [player] [score]"""
         print("s " + str(self.room) + " " + str(self.player) + " " + str(self.score))
+
+    def getPlayer(self):
+        return self.player
     
     def checkCountdownEnded(self):
         """Returns if the light countdown has ended"""
