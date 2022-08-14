@@ -6,7 +6,7 @@ class LightStrip:
     LED_PIN = 18
     LED_FREQ_HZ = 800000
     LED_DMA = 10
-    LED_BRIGHTNESS = 100
+    LED_BRIGHTNESS = 50
     LED_INVERT = False
     LED_CHANNEL = 0
     LED_PER_TARGET = 33
@@ -36,6 +36,13 @@ class LightStrip:
         """Instantly change color of all lights in target range"""
         start = target*self.LED_PER_TARGET
         for i in range(start, start + self.LED_PER_TARGET):
+            self.strip.setPixelColor(i, color)
+        self.strip.show()
+
+    def fillRemainingTarget(self, color, target, index):
+        """Instantly change all remaining lights on a target to a different color"""
+        start = target*self.LED_PER_TARGET + index
+        for i in range(start, start + self.LED_PER_TARGET  - index):
             self.strip.setPixelColor(i, color)
         self.strip.show()
 

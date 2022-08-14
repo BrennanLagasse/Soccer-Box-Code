@@ -14,7 +14,21 @@ class StandardOnePlayerGame(GameManager):
             self._games[room][0].setTarget(super().pickRandomTarget(room))
     
     def update(self):
-        super().update(game_manager.pickNextTarget)
+        super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
+
+    def pickNextTarget(self, game, score, other_game):
+        """Selects new targets and updates score based on boolean score"""
+        if score:
+            game.addPoint()
+
+        # Reset Target
+        game.resetTarget(game.getTarget())
+
+        # Get new targets
+        game.setTarget(self.pickRandomTarget(game.getRoom(), {game.getTarget(), other_game.getTarget()}))
+
+        # Reset counters
+        game.resetCounter()
 
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')

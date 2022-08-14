@@ -81,6 +81,10 @@ class Game:
         self.lights.colorWipe(self.target, self.light_index)
         self.light_index += 1
 
+    def updateLightsCountdownAlt(self, target):
+        """Turns off the next light in sequence on any target"""
+        self.lights.colorWipe(target, self.light_index)
+
     def colorTarget(self, color, target):
         """Lights up a target in the given color"""
         self.lights.fillTarget(color, target)
@@ -96,6 +100,9 @@ class Game:
     def colorTargetAlternate(self):
         """Lights up a target in the alternate theme color"""
         self.lights.fillTarget(self.color_alternate, self.next_target)
+
+    def colorRemainingTarget(self, target, color):
+        self.lights.fillRemainingTarget(color, target, self.light_index)
 
     def startWinnerLights(self):
         """Flashes all of the lights in the player's color twice then turns them off"""

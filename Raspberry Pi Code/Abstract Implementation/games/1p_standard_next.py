@@ -16,7 +16,7 @@ class OnePlayerNextGame(GameManager):
             game.setNextTarget(super().pickRandomTarget(room, {game.getTarget()}))
     
     def update(self):
-        super().update(self.pickNextTarget)
+        super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
 
     def pickNextTarget(self, game, score, other_game=None):
         if score:

@@ -14,9 +14,9 @@ class DoubleStandardOnePlayerGame(GameManager):
             self._games[room][0].setTarget(super().pickRandomTarget(room))
     
     def update(self):
-        super().update(game_manager.pickNextTarget)
+        super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
     
-    def pickNextTarget(self, game, score):
+    def pickNextTarget(self, game, score, other_game):
         if score:
             if game.getFlag() == 1:
                 game.addPoint()
@@ -25,8 +25,14 @@ class DoubleStandardOnePlayerGame(GameManager):
                 game.resetCounter()
                 game.setFlag(0)
             else:
-                game.colorTarget(game.color_alternate, game.getTarget())
+                game.colorRemainingTarget(game.getTarget(), game.color_alternate)
                 game.setFlag(1)
+        else:
+            game.resetTarget(game.getTarget())
+            game.setTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))
+            game.resetCounter()
+            game.setFlag(0)
+
         
 
 if __name__ == '__main__':

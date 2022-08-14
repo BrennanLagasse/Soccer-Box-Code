@@ -23,15 +23,15 @@ class GameManager:
         # left out for now
 
         # Format: Number of rooms, r1, ... , rn, target time, game time
-        a = input()
+        a = input("Number of Rooms: ")
         num_rooms = int(a)
         self.ROOMS = []
         for i in range(num_rooms):
-            a = input()
+            a = input("Room " + str(i) + ": ")
             self.ROOMS.append(int(a))
-        a = input()
+        a = input("Target Time: ")
         self.TARGET_TIME = int(a)
-        a = input()
+        a = input("Game Time: ")
         self.GAME_TIME = int(a)
 
         # Create and store serial access
@@ -65,17 +65,17 @@ class GameManager:
         # Notifies the app that the system is starting
         print("START")
     
-    def update(self, newTargetPicker):
+    def update(self, checkTargets, newTargetPicker, lightsUpdate):
         """Runs all game associated actions, decision making, and SSH updates (NOT DONE)"""
 
         # Get log of targets that where hit
         target_log = self.getTargetLog()
 
         # Check for valid hits and respond
-        self.checkTargets(target_log, newTargetPicker)   
+        checkTargets(target_log, newTargetPicker)   
 
         # Update lights and reset expired targets
-        self.standardLightUpdate(newTargetPicker)
+        lightsUpdate(newTargetPicker)
 
         # Wait
         time.sleep(self.TARGET_TIME / self.LED_PER_TARGET)
@@ -88,7 +88,6 @@ class GameManager:
             while(self.serial_connections[i].in_waiting > 0):
                 line = int(self.serial_connections[i].readline().decode('utf-8').rstrip()) + 8 * i
                 target_log.append(line)
-                print(line)
 
         return target_log
 
@@ -106,18 +105,17 @@ class GameManager:
 
     def standardLightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
-        for room in range(0, len(self._games)):
-            game = self._games[room][0]
+        for room in self._games:
+            for game in room:
+                # Update lights
+                game.updateLightsCountdown()
 
-            # Update lights
-            game.updateLightsCountdown()
-
-            # Update target if all lights are out
-            if game.checkCountdownEnded():
-                if(self.num_players == 1):
-                    newTargetPicker(game, False, None)
-                else:
-                    newTargetPicker(game, False, self.games[game.getRoom()[(self.getPlayer() + 1) % 2]])
+                # Update target if all lights are out
+                if game.checkCountdownEnded():
+                    if(self.num_players == 1):
+                        newTargetPicker(game, False, None)
+                    else:
+                        newTargetPicker(game, False, self._games[game.getRoom()][(game.getPlayer() + 1) % 2])
 
 
     def pickRandomTarget(self, room, exceptions=[]):

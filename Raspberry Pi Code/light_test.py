@@ -6,6 +6,8 @@ from light_strip import LightStrip
 
 BLUE = Color(0, 0, 255)
 BLACK = Color(0, 0, 0)
+ORANGE = Color(253, 88, 0)
+
 NUM_TARGETS_PER_ROOM = 8
 NUM_ROOMS = 1
 
@@ -17,7 +19,7 @@ if __name__ == '__main__':
 
     # All working. Use this as test
     for target in range(0, NUM_ROOMS*NUM_TARGETS_PER_ROOM):
-        lights.fillTarget(BLUE, target)
+        lights.fillTarget(ORANGE, target)
         time.sleep(0.75)
         lights.fillTarget(BLACK, target)
 
