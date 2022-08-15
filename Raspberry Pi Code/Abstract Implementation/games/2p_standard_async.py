@@ -4,7 +4,7 @@ from game_manager import GameManager
 
 NUM_PLAYERS = 2
 
-class StandardOnePlayerGame(GameManager):
+class StandardTwoPlayerAsyncGame(GameManager):
     """Standard Game"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
@@ -33,7 +33,7 @@ class StandardOnePlayerGame(GameManager):
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    game_manager = StandardOnePlayerGame()
+    game_manager = StandardTwoPlayerAsyncGame()
 
     try:
         while not game_manager.timeExpired():

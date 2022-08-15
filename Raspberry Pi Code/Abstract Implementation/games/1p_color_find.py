@@ -5,7 +5,7 @@ from random import randint
 
 NUM_PLAYERS = 1
 
-class StandardOnePlayerColorGame(GameManager):
+class ColorFindGame(GameManager):
 
     """Standard Game"""
     def __init__(self):
@@ -65,7 +65,7 @@ class StandardOnePlayerColorGame(GameManager):
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    game_manager = StandardOnePlayerColorGame()
+    game_manager = ColorFindGame()
 
     try:
         while not game_manager.timeExpired():

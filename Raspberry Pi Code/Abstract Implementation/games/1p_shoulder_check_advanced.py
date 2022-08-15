@@ -5,7 +5,7 @@ from random import randint
 
 NUM_PLAYERS = 1
 
-class StandardOnePlayerGame(GameManager):
+class ShoulderCheckAdvancedGame(GameManager):
     """Standard Game"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
@@ -33,7 +33,7 @@ class StandardOnePlayerGame(GameManager):
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    game_manager = StandardOnePlayerGame()
+    game_manager = ShoulderCheckAdvancedGame()
 
     try:
         while not game_manager.timeExpired():
