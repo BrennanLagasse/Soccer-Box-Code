@@ -8,16 +8,7 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
     """Standard game except player can choose from either of two targets"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
-
-        exceptions = []
-
-        # Pick initial targets
-        for room in self._games:
-            for game in room:
-                game.setTarget(super().pickRandomTarget(game.getRoom()))
-                exceptions.append(game.getTarget())
-                game.setNextTarget(super().pickRandomTarget(game.getRoom(), exceptions))
-                exceptions.append(game.getNextTarget())
+        super().pickTwoDoubleTargets()
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
