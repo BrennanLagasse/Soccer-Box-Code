@@ -140,6 +140,18 @@ class GameManager:
         game.setTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))
         game.resetCounter()
 
+    def pickTwoDoubleTargets(self, game, other_game):
+        """Sets up a two player game where each player has two targets that are both active"""
+        games = [game, other_game]
+        exceptions = []
+
+        for g in games:
+            g.setTarget(super().pickRandomTarget(g.getRoom()))
+            exceptions.append(g.getTarget())
+            g.setNextTarget(super().pickRandomTarget(g.getRoom(), exceptions))
+            g.colorTarget(g.color_primary, g.getNextTarget())
+            exceptions.append(g.getNextTarget())
+
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
 
