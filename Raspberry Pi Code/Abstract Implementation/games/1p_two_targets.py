@@ -4,8 +4,8 @@ from game_manager import GameManager
 
 NUM_PLAYERS = 1
 
-class StandardOnePlayerBothTargetGame(GameManager):
-    """Standard game except player must hit both targets that appear in the time frame"""
+class OnePlayerTwoTargetGame(GameManager):
+    """Standard game except player can choose from either of two targets"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
 
@@ -22,20 +22,11 @@ class StandardOnePlayerBothTargetGame(GameManager):
         for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
-                if game.getTarget() in target_log:
-                    game.resetTarget(game.getTarget())
-                    if(game.getFlag() == 2):
+                if (game.getTarget() in target_log) or (game.getNextTarget() in target_log):
+                    if(self.num_players == 1):
                         newTargetPicker(game, True, None)
-                        game.setFlag(0)
                     else:
-                        game.setFlag(1)
-                if game.getNextTarget() in target_log:
-                    game.resetTarget(game.getNextTarget())
-                    if(game.getFlag() == 1):
-                        newTargetPicker(game, True, None)
-                        game.setFlag(0)
-                    else:
-                        game.setFlag(2)
+                        newTargetPicker(game, True, self._games[room][(i+1) % 2])
 
     def pickNextTarget(self, game, score, other_target):
         if(score):
@@ -77,7 +68,7 @@ class StandardOnePlayerBothTargetGame(GameManager):
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    game_manager = StandardOnePlayerBothTargetGame()
+    game_manager = OnePlayerTwoTargetGame()
 
     try:
         while not game_manager.timeExpired():

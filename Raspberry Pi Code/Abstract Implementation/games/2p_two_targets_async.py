@@ -2,17 +2,22 @@
 
 from game_manager import GameManager
 
-NUM_PLAYERS = 1
+NUM_PLAYERS = 2
 
-class StandardOnePlayerTwoTargetGame(GameManager):
+class TwoPlayerTwoTargetAsyncGame(GameManager):
     """Standard game except player can choose from either of two targets"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
 
+        exceptions = []
+
         # Pick initial targets
         for room in self._games:
-            room[0].setTarget(super().pickRandomTarget(room[0].getRoom()))
-            room[0].setNextTarget(super().pickRandomTarget(room[0].getRoom(), {room[0].getTarget()}))
+            for game in room:
+                game.setTarget(super().pickRandomTarget(game.getRoom()))
+                exceptions.append(game.getTarget())
+                game.setNextTarget(super().pickRandomTarget(game.getRoom(), exceptions))
+                exceptions.append(game.getNextTarget())
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
@@ -23,32 +28,32 @@ class StandardOnePlayerTwoTargetGame(GameManager):
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if (game.getTarget() in target_log) or (game.getNextTarget() in target_log):
-                    if(self.num_players == 1):
-                        newTargetPicker(game, True, None)
-                    else:
-                        newTargetPicker(game, True, self._games[room][(i+1) % 2])
+                    newTargetPicker(game, True, self._games[room][(i+1) % 2])
 
-    def pickNextTarget(self, game, score, other_target):
+    def pickNextTarget(self, game, score, other_game):
         if(score):
             game.addPoint()
 
+        games = [game, other_game]
+
         # Reset Targets
-        game.resetTarget(game.getTarget())
-        game.resetTarget(game.getNextTarget())
+        for g in games:
+            g.resetTarget(g.getTarget())
+            g.resetTarget(g.getNextTarget())
 
         # Pick new targets
         exceptions = []
-        exceptions.append(game.getTarget())
-        exceptions.append(game.getNextTarget())
-        game.setTarget(super().pickRandomTarget(game.getRoom(), exceptions))
-        exceptions.append(game.getTarget())
-        game.setNextTarget(super().pickRandomTarget(game.getRoom(), exceptions))
+        
+        for g in games:
+            g.setTarget(super().pickRandomTarget(g.getRoom(), exceptions))
+            exceptions.append(g.getTarget())
+            g.setNextTarget(super().pickRandomTarget(g.getRoom(), exceptions))
+            exceptions.append(g.getNextTarget())
 
-        # Color new targets
-        game.colorTarget(game.color_primary, game.getNextTarget())
-
-        # Reset counter
-        game.resetCounter()
+        # Color new targets and reset counter
+        for g in games:
+            g.colorTarget(g.color_primary, g.getNextTarget())
+            g.resetCounter()
 
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
@@ -63,12 +68,10 @@ class StandardOnePlayerTwoTargetGame(GameManager):
                     newTargetPicker(game, False, None)
 
 
-
-
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 
-    game_manager = StandardOnePlayerTwoTargetGame()
+    game_manager = TwoPlayerTwoTargetAsyncGame()
 
     try:
         while not game_manager.timeExpired():

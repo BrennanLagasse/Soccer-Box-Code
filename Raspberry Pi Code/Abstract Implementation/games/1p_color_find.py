@@ -6,6 +6,7 @@ from random import randint
 NUM_PLAYERS = 1
 
 class ColorFindGame(GameManager):
+    """Game where all targets light up at random and player must hit target of color announced by speaker"""
 
     """Standard Game"""
     def __init__(self):
@@ -55,11 +56,14 @@ class ColorFindGame(GameManager):
                     newTargetPicker(game, False, None)
 
     def randomColors(self, game):
-        colors = [game.ORANGE, game.YELLOW, game.GREEN, game.BLUE, game.PURPLE, game.PINK, game.WHITE]
+        colors = [game.ORANGE, game.YELLOW, game.GREEN, game.BLUE, game.PURPLE, game.PINK, game.WHITE, game.RED]
 
         for i in range(game.getRoom() * 8, game.getRoom() * 8 + super().NUM_TARGETS_PER_ROOM):
-                if not (i == game.getTarget()):
-                    game.colorTarget(colors.pop(randint(0, len(colors) - 1)), i)
+            color = colors.pop(randint(0, len(colors) - 1))
+            game.colorTarget(color, i)
+
+            if i == game.getTarget():
+                super().writeToArduino(color)
 
 
 if __name__ == '__main__':

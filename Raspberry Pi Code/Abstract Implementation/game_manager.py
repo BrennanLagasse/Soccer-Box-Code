@@ -91,6 +91,11 @@ class GameManager:
 
         return target_log
 
+    def writeToArduino(self, room, message):
+        """Send a message to the arduino"""
+        formatted_message = str(message) + "\n"
+        self.serial_connections[room].write(formatted_message.encode('utf-8'))
+
     def checkTargets(self, target_log, newTargetPicker):
         """Checks and manages target hits. Override when player has multiple active targets"""
         for room in range(0, len(self._games)):

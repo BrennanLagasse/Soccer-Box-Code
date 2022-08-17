@@ -1,0 +1,42 @@
+Square brackets represent place where value is added. They are ommitted in the final message
+
+* * * * * Arduino --> RPi * * * * *
+
+Piezo hit:
+[number]
+5
+
+* * * * * RPi --> Arduino * * * * * 
+
+Speaker sound:
+[color]
+red
+
+Score update:
+P[player number]S[score]
+P1S5
+
+ * * * * * RPi --> App * * * * * 
+
+Game Starts:
+START
+
+Game Ends:
+END
+
+Input:
+[Input Prompt]
+
+ * * * * * App --> RPi * * * * * 
+
+Command:
+[command] (Goes directly to terminal)
+ls
+
+Input:
+[value] (Still have not solved yet)
+
+
+
+
+ 
