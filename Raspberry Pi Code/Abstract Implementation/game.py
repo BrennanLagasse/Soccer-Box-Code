@@ -29,6 +29,7 @@ class Game:
         self.target = 0
         self.next_target = 0
         self.flag = 0
+        self.extras = []
 
         if self.player == 0:
             self.color_primary = self.RED
@@ -59,8 +60,8 @@ class Game:
     def setFlag(self, val):
         self.flag = val
 
-    def addPoint(self):
-        self.score += 1
+    def addPoints(self, points):
+        self.score += points
         self.reportScore()
 
     def getScore(self):
