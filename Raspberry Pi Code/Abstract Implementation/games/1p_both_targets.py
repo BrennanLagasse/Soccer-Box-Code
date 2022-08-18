@@ -39,7 +39,7 @@ class OnePlayerBothTargetGame(GameManager):
 
     def pickNextTarget(self, game, score, other_target):
         if(score):
-            game.addPoint()
+            self.addPoints(game)
 
         # Reset Targets
         game.resetTarget(game.getTarget())

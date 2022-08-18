@@ -19,7 +19,7 @@ class RondoGame(GameManager):
     def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
         if score:
-            game.addPoint()
+            self.addPoints(game)
         game.resetTarget(game.getTarget())
         game.setTarget(self.pickRandomTarget(game.getRoom(), [0, 1, 7]))
         game.resetCounter()

@@ -91,6 +91,12 @@ class GameManager:
 
         return target_log
 
+    def addPoints(self, game, points=1):
+        """Adds a point to the given game and notifies the nano to update the scoreboard"""
+        game.addPoints(points)
+        score_message = "P" + game.getPlayer() + "S" + game.getScore()
+        self.writeToArduino(game.getRoom, score_message)
+
     def writeToArduino(self, room, message):
         """Send a message to the arduino"""
         formatted_message = str(message) + "\n"
@@ -135,7 +141,7 @@ class GameManager:
     def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
         if score:
-            game.addPoint()
+            self.addPoints(game)
         game.resetTarget(game.getTarget())
         game.setTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))
         game.resetCounter()

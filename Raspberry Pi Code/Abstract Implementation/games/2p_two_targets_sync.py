@@ -23,7 +23,7 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
 
     def pickNextTarget(self, game, score, other_game):
         if(score):
-            game.addPoint()
+            self.addPoints(game)
 
         games = [game, other_game]
 

@@ -35,7 +35,7 @@ class TwoPlayerBothTargetAsyncGame(GameManager):
 
     def pickNextTarget(self, game, score, other_game):
         if(score):
-            game.addPoint()
+            self.addPoints(game)
 
         # Reset Targets
         game.resetTarget(game.getTarget())

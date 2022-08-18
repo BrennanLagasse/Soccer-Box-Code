@@ -29,7 +29,7 @@ class StandardOnePlayerColorGame(GameManager):
     def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
         if score:
-            game.addPoint()
+            self.addPoints(game)
         
         # Color new target
         game.setTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))

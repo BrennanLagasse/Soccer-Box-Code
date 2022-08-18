@@ -26,7 +26,7 @@ class TwoPlayerNextSyncGame(GameManager):
 
     def pickNextTarget(self, game, score, other_game):
         if score:
-            game.addPoint()
+            self.addPoints(game)
 
         # Reset targets
         game.resetTarget(game.getTarget())

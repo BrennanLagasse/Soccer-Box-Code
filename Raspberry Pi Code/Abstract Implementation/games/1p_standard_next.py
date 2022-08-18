@@ -20,7 +20,7 @@ class OnePlayerNextGame(GameManager):
 
     def pickNextTarget(self, game, score, other_game=None):
         if score:
-            game.addPoint()
+            self.addPoints(game)
         game.resetTarget(game.getTarget())
         game.setTarget(game.getNextTarget())
         game.setNextTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))

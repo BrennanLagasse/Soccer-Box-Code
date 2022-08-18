@@ -19,7 +19,7 @@ class DoubleStandardOnePlayerGame(GameManager):
     def pickNextTarget(self, game, score, other_game):
         if score:
             if game.getFlag() == 1:
-                game.addPoint()
+                self.addPoints(game)
                 game.resetTarget(game.getTarget())
                 game.setTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget()]))
                 game.resetCounter()

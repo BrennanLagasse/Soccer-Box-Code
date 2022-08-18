@@ -21,7 +21,7 @@ class StandardTwoPlayerSyncGame(GameManager):
     def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
         if score:
-            game.addPoint()
+            self.addPoints(game)
 
         # Reset Targets
         game.resetTarget(game.getTarget())
