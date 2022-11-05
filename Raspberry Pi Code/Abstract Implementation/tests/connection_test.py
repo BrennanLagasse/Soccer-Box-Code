@@ -12,7 +12,8 @@ if __name__ == '__main__':
     with serial.Serial("/dev/ttyUSB3", 9600, timeout=1) as arduino:
         time.sleep(0.1) #wait for serial to open
         if arduino.isOpen():
-            print("{} connected!".format(arduino.port))
+            welcome_message = "{} connected!".format(arduino.port)
+            print(welcome_message.encode())
             try:
                 while True:
                     # cmd=input("Enter command : ")
@@ -22,7 +23,7 @@ if __name__ == '__main__':
                     if  arduino.inWaiting()>0: 
                         answer=arduino.readline()
                         try:
-                            print(answer)
+                            print(answer.encode())
                         except:
                             # nothing
                             garbage = True
