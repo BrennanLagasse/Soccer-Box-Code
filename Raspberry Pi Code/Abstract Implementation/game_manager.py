@@ -94,7 +94,7 @@ class GameManager:
     def addPoints(self, game, points=1):
         """Adds a point to the given game and notifies the nano to update the scoreboard"""
         game.addPoints(points)
-        score_message = "P" + game.getPlayer() + "S" + game.getScore()
+        score_message = "P" + str(game.getPlayer()) + "S" + str(game.getScore())
         self.writeToArduino(game.getRoom, score_message)
 
     def writeToArduino(self, room, message):
