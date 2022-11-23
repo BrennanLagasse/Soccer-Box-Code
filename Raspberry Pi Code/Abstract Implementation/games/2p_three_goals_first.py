@@ -18,14 +18,14 @@ class ThreeGoalsFirstGame(GameManager):
             
             for i in self.player1_targets:
                 target = room * 8 + i
-                game1.colorTarget(self.color_primary, target)
+                game1.colorTarget(game1.color_primary, target)
                 game1.extras.append(target)
 
             game2 = self._games[room][1]
 
             for i in self.player2_targets:
                 target = room * 8 + i
-                game2.colorTarget(self.color_primary, target)
+                game2.colorTarget(game2.color_primary, target)
                 game2.extras.append(target)
     
     def update(self):
