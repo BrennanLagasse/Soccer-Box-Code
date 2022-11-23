@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: only uses targets 3 to 7, 1 target, set time, set target time
 
 from game_manager import GameManager
 
@@ -11,7 +12,7 @@ class RondoGame(GameManager):
 
         # Pick initial targets
         for room in range(0, len(self._games)):
-            self._games[room][0].setTarget(super().pickRandomTarget(room))
+            self._games[room][0].setTarget(super().pickRandomTarget(room, [0, 1, 7]))
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
