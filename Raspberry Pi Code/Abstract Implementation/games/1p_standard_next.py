@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: 2 targets (current and next), set time, set target time
 
 from game_manager import GameManager
 
@@ -14,6 +15,7 @@ class OnePlayerNextGame(GameManager):
             game = self._games[room][0]
             game.setTarget(super().pickRandomTarget(room))
             game.setNextTarget(super().pickRandomTarget(room, {game.getTarget()}))
+            game.colorTargetAlternate()
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
