@@ -1,6 +1,7 @@
 # Recreates original code for original game with LightStrip and Game classes
 
 from game_manager import GameManager
+import time
 
 NUM_PLAYERS = 2
 
@@ -26,6 +27,9 @@ class StandardTwoPlayerSyncGame(GameManager):
         # Reset Targets
         game.resetTarget(game.getTarget())
         other_game.resetTarget(other_game.getTarget())
+
+        # Pause for a quarter second
+        time.sleep(0.25)
 
         # Get new targets for both players
         game.setTarget(self.pickRandomTarget(game.getRoom(), {game.getTarget()}))
