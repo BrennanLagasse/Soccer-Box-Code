@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: All targets light up different colors, speaker says correct color target, set time, set target time
 
 from game_manager import GameManager
 from random import randint
@@ -56,14 +57,19 @@ class ColorFindGame(GameManager):
                     newTargetPicker(game, False, None)
 
     def randomColors(self, game):
+        """Picks a random color"""
         colors = [game.ORANGE, game.YELLOW, game.GREEN, game.BLUE, game.PURPLE, game.PINK, game.WHITE, game.RED]
+        color_names = ["orange", "yellow", "green", "blue", "purple", "pink", "white", "red"]
 
         for i in range(game.getRoom() * 8, game.getRoom() * 8 + super().NUM_TARGETS_PER_ROOM):
-            color = colors.pop(randint(0, len(colors) - 1))
+            color_index = randint(0, len(colors) - 1)
+            color = colors.pop(color_index)
+            color_name = color_names.pop(color_index)
             game.colorTarget(color, i)
 
+            # Send the color to the Arduino to relay to the speaker
             if i == game.getTarget():
-                super().writeToArduino(color)
+                super().writeToArduino(game.getRoom(), color_name)
 
 
 if __name__ == '__main__':
