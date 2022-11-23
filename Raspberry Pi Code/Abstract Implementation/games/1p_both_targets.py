@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: 2 targets light up and must hit both before time expires (first hit turns off that target, second hit switches to next target), set time, set target time
 
 from game_manager import GameManager
 
