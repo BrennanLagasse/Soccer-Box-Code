@@ -1,4 +1,7 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: 
+# 1 target each, whoever hits theirs first gets the point and changes all
+# set time, set target time (0 = 60 minutes), 2 to 4 players
 
 from game_manager import GameManager
 import time
