@@ -1,6 +1,6 @@
 # Recreates original code for original game with LightStrip and Game classes
 # Description:
-# Targets 4 to 6 are active, targets 2 and 8 light only, set time, set target time
+# Targets 4-6 and 2 or 8 light up
 # Player must hit the front target (4-6) that matches the light in the back (2 or 8) that turns on in the same color
 # Only 2 OR 8 turns on
 
