@@ -9,17 +9,9 @@ class TwoPlayerNextAsyncGame(GameManager):
     def __init__(self):
         super().__init__(NUM_PLAYERS)
 
-        exceptions = []
-
         # Pick initial targets
         for room in self._games:
-            for game in room:
-                target = super().pickRandomTarget(room, exceptions)
-                exceptions.append(target)
-                game.setTarget()
-                next_target = super().pickRandomTarget(room, exceptions)
-                exceptions.append(next_target)
-                game.setNextTarget(next_target)
+            super().pickTwoDoubleTargets(room[0], room[1])
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
