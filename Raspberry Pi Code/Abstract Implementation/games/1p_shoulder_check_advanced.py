@@ -15,7 +15,7 @@ class ShoulderCheckAdvancedGame(GameManager):
         super().__init__(NUM_PLAYERS)
 
         # Pick initial target
-        for room in range(0, len(self._games)):
+        for room in self._games:
             for game in room:
                 # Set the actual target as a front target 4-6 (targets[3:5])
                 game.setTarget(super().pickRandomTarget(room, [0, 1, 2, 6, 7]))
