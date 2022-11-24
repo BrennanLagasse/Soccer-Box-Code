@@ -1,6 +1,7 @@
 # Recreates original code for original game with LightStrip and Game classes
 
 from game_manager import GameManager
+import time
 
 NUM_PLAYERS = 2
 
@@ -44,6 +45,9 @@ class TwoPlayerBothTargetSyncGame(GameManager):
             g.resetTarget(g.getTarget())
             g.resetTarget(g.getNextTarget())
             g.resetCounter()
+
+        # Pause to prevent rereading
+        time.sleep(0.35)
 
         # Pick new targets
         super().pickTwoDoubleTargets()

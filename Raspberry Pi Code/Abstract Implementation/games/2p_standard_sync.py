@@ -31,8 +31,8 @@ class StandardTwoPlayerSyncGame(GameManager):
         game.resetTarget(game.getTarget())
         other_game.resetTarget(other_game.getTarget())
 
-        # Pause for a quarter second
-        time.sleep(0.25)
+        # Pause to prevent rereading
+        time.sleep(0.35)
 
         # Get new targets for both players
         game.setTarget(self.pickRandomTarget(game.getRoom(), {game.getTarget()}))
