@@ -8,7 +8,10 @@ class TwoPlayerBothTargetAsyncGame(GameManager):
     """Standard game except player must hit both targets that appear in the time frame"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
-        super().pickTwoDoubleTargets()
+
+        # Pick initial targets
+        for room in self._games:
+            super().pickTwoDoubleTargets(room[0], room[1])
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
