@@ -18,7 +18,7 @@ class ShoulderCheckBasicGame(GameManager):
         for room in self._games:
             for game in room:
                 # Set the actual target as a front target 4-6 (targets[3:5])
-                game.setTarget(super().pickRandomTarget(room, [0, 1, 2, 6, 7]))
+                game.setTarget(super().pickRandomTarget(game.getRoom(), [0, 1, 2, 6, 7]))
 
                 colors = [game.ORANGE, game.YELLOW, game.GREEN, game.BLUE, game.PURPLE, game.PINK, game.WHITE]
 
