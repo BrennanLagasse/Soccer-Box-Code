@@ -2,7 +2,7 @@
 
 from game_manager import GameManager
 
-NUM_PLAYERS = 1
+NUM_PLAYERS = 2
 
 class ThreeGoalsFirstGame(GameManager):
     """Game where player must hit all of opponents three targets before theirs are hit to win"""
