@@ -46,11 +46,12 @@ class ColorFindGame(GameManager):
         for room in self._games:
             for game in room:
                 # Update lights
-                game.updateLightsCountdown()
-                
                 for i in range(game.getRoom() * 8, game.getRoom() * 8 + super().NUM_TARGETS_PER_ROOM):
                     if not (i == game.getTarget()):
                         game.updateLightsCountdownAlt(i)
+                
+                # Update player target last since this increments the counter
+                game.updateLightsCountdown()
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
