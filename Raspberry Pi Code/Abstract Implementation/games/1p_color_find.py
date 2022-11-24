@@ -26,7 +26,7 @@ class ColorFindGame(GameManager):
 
     
     def update(self):
-        super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
+        super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
 
     def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
