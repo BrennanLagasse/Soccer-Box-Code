@@ -13,9 +13,10 @@ class OnePlayerBothTargetGame(GameManager):
 
         # Pick initial targets
         for room in self._games:
-            room[0].setTarget(super().pickRandomTarget(room[0].getRoom()))
-            room[0].setNextTarget(super().pickRandomTarget(room[0].getRoom(), {room[0].getTarget()}))
-            room[0].colorTargetAlternate()
+            for game in room:
+                game.setTarget(super().pickRandomTarget(game.getRoom()))
+                game.setNextTarget(super().pickRandomTarget(game.getRoom(), {game.getTarget()}))
+                game.colorTarget(game.color_primary, game.getNextTarget())
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
