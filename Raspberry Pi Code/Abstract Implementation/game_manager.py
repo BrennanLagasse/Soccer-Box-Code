@@ -130,7 +130,7 @@ class GameManager:
 
 
     def pickRandomTarget(self, room, exceptions=[]):
-        """Pick a target from a room excluding given targets"""
+        """Pick a target from a room excluding given targets. Room is an integer, exceptions is a list"""
         x = room*self.NUM_TARGETS_PER_ROOM + randint(0, self.NUM_TARGETS_PER_ROOM - 1)
 
         while x in exceptions:
