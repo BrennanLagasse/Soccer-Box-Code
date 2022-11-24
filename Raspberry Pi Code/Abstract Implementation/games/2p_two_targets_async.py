@@ -8,7 +8,10 @@ class TwoPlayerTwoTargetAsyncGame(GameManager):
     """Standard game except player can choose from either of two targets"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
-        super().pickTwoDoubleTargets()
+        
+        # Pick initial targets
+        for room in self._games:
+            super().pickTwoDoubleTargets(room[0], room[1])
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
