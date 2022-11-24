@@ -152,9 +152,9 @@ class GameManager:
         exceptions = []
 
         for g in games:
-            g.setTarget(super().pickRandomTarget(g.getRoom()))
+            g.setTarget(self.pickRandomTarget(g.getRoom()))
             exceptions.append(g.getTarget())
-            g.setNextTarget(super().pickRandomTarget(g.getRoom(), exceptions))
+            g.setNextTarget(self.pickRandomTarget(g.getRoom(), exceptions))
             g.colorTarget(g.color_primary, g.getNextTarget())
             exceptions.append(g.getNextTarget())
 
