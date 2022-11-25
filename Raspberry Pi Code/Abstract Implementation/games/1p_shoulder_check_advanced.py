@@ -24,7 +24,7 @@ class ShoulderCheckAdvancedGame(GameManager):
 
                 # Color front targets randomly 4-6 (targets[3:5]) 
                 # and color one back target the same color 2 or 8 (targets[1] or targets[7])
-                for i in range(room * 8 + 3, room * 8 + 6):
+                for i in range(game.getRoom() * 8 + 3, game.getRoom() * 8 + 6):
                     color = colors.pop(randint(0, len(colors) - 1))
                     game.colorTarget(color, i)
 
