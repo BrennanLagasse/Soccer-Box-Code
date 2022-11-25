@@ -37,7 +37,7 @@ class ThreeGoalsFirstGame(GameManager):
             for game in room:
                 for target in game.extras:
                     if target in target_log:
-                        game.addPoints()
+                        game.addPoints(1)
                         game.resetTarget(target)
                         game.extras.remove(target)
                     if len(game.extras) == 0:
