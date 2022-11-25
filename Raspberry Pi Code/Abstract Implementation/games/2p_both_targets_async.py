@@ -1,4 +1,7 @@
 # Recreates original code for original game with LightStrip and Game classes
+# 2 targets light up for each player and must hit both before time expires 
+# (first hit turns off that target, second hit switches to next target), set time, set target time, 2 players
+# Request that second target changes color after the first target is hit (see single player both)
 
 from game_manager import GameManager
 
@@ -18,23 +21,31 @@ class TwoPlayerBothTargetAsyncGame(GameManager):
 
     def checkTargets(self, target_log, newTargetPicker):
         """Checks and manages target hits. Looks at both target options"""
+        # The flag is used to track which target is hit: 
+        # 0 means no hit, 1 means target 1 is hit, and 2 means target 2 is hit
         for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if game.getTarget() in target_log:
                     game.resetTarget(game.getTarget())
                     if(game.getFlag() == 2):
+                        # Both targets were hit, reset
                         newTargetPicker(game, True, self._games[room][(i + 1) % 2])
                         game.setFlag(0)
                     else:
+                        # One target was hit, update flag and change other target color
                         game.setFlag(1)
+                        game.colorRemainingTarget(game.getNextTarget(), game.color_alternate)
                 if game.getNextTarget() in target_log:
                     game.resetTarget(game.getNextTarget())
                     if(game.getFlag() == 1):
+                        # Both targets were hit, reset
                         newTargetPicker(game, True, self._games[room][(i + 1) % 2])
                         game.setFlag(0)
                     else:
+                        # One target was hit, update flag and change other target color
                         game.setFlag(2)
+                        game.colorRemainingTarget(game.getTarget(), game.color_alternate)
 
     def pickNextTarget(self, game, score, other_game):
         if(score):

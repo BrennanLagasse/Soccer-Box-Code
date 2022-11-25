@@ -26,6 +26,7 @@ class TwoPlayerBothTargetSyncGame(GameManager):
                         game.setFlag(0)
                     else:
                         game.setFlag(1)
+                        game.colorRemainingTarget(game.getTarget(), game.color_alternate)
                 if game.getNextTarget() in target_log:
                     game.resetTarget(game.getNextTarget())
                     if(game.getFlag() == 1):
@@ -33,6 +34,7 @@ class TwoPlayerBothTargetSyncGame(GameManager):
                         game.setFlag(0)
                     else:
                         game.setFlag(2)
+                        game.colorRemainingTarget(game.getTarget(), game.color_alternate)
 
     def pickNextTarget(self, game, score, other_game):
         if(score):
