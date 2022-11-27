@@ -39,6 +39,10 @@ class ShoulderCheckBasicGame(GameManager):
     def randomColors(self, game):
         colors = [game.ORANGE, game.YELLOW, game.GREEN, game.BLUE, game.PURPLE, game.PINK, game.WHITE]
 
+        # Reset everything to be careful
+        for i in range(game.getRoom() * 8, game.getRoom() * 8 + 8):
+            game.resetTarget(i)
+
         # Color front targets randomly 4-6 (targets[3:5]) 
         # and color one back target the same color 2 or 8 (targets[1] or targets[7])
         for i in range(game.getRoom() * 8 + 3, game.getRoom() * 8 + 6):
