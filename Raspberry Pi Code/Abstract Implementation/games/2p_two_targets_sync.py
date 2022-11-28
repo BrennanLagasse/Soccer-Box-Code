@@ -56,14 +56,15 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
         for room in self._games:
-            for game in room:
+            for i in range(self.num_players):
+                game = self._games[room][i]
                 # Update lights
                 game.updateLightsCountdown()
                 game.updateLightsCountdownAlt(game.getNextTarget())
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
-                    newTargetPicker(game, False, None)
+                    newTargetPicker(game, False, self._games[game.getRoom()][(i+1) % 2])
 
 
 if __name__ == '__main__':
