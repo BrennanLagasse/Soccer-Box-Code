@@ -62,7 +62,7 @@ class ShoulderCheckBasicGame(GameManager):
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
         for room in self._games:
-            game = self._games[room][0]
+            game = room[0]
 
             # Update lights
             game.updateLightsCountdown()
