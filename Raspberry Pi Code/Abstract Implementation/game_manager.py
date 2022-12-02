@@ -180,7 +180,7 @@ class GameManager:
             for r in range(0, len(best_player)):
                 self._games[r][0].startWinnerLights()
         else:
-            # Find the winner of each game, no lights if no winner
+            # Find the winner of each game, once in each color if there is no winner
             for r in range(0, len(self._games)):
                 score1 = self._games[r][0].getScore()
                 score2 = self._games[r][1].getScore()
@@ -189,6 +189,8 @@ class GameManager:
                     self._games[r][0].startWinnerLights()
                 elif (score2 > score1):
                     self._games[r][1].startWinnerLights()
+                else:
+                    self.games[r][0].startTieLights()
 
         # Sends out final scores
         for room in self._games:

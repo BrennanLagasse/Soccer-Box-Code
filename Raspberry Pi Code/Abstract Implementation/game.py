@@ -116,4 +116,16 @@ class Game:
             time.sleep(0.5)
             self.lights.resetAll()
             time.sleep(0.5)
+
+    def startTieLights(self):
+        """Flashes lights in alternating blue red pattern"""
+        for a in range(2):
+            for i in range(self.room * 8, self.room * 8 + 8):
+                if(i % 2 == 1):
+                    self.colorTarget(i, self.RED)
+                else:
+                    self.colorTarget(i, self.BLUE)
+            time.sleep(0.5)
+            self.lights.resetAll()
+            time.sleep(0.5)
         
