@@ -46,7 +46,7 @@ class TwoPlayerTwoTargetAsyncGame(GameManager):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
         for room in self._games:
             for i in range(self.num_players):
-                game = self._games[room][i]
+                game = room[i]
                 # Update lights
                 game.updateLightsCountdown()
                 game.updateLightsCountdownAlt(game.getNextTarget())
