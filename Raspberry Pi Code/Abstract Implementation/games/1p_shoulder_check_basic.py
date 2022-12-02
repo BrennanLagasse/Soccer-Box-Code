@@ -69,7 +69,7 @@ class ShoulderCheckBasicGame(GameManager):
 
             # Update front targets
             for i in range(3,6):
-                game.updateLightsCountdownAlt(game.getRoom*8+i)
+                game.updateLightsCountdownAlt(game.getRoom()*8+i)
 
             # Update target if all lights are out
             if game.checkCountdownEnded():
