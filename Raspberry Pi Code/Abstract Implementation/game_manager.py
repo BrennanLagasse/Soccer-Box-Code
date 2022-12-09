@@ -161,14 +161,16 @@ class GameManager:
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
 
-    def end(self):
+    def end(self, room=0):
         """Manages end notification and score communication via SSH and turns on end lights"""
+
+        # Case: Single Player.
         if self.num_players == 1:
             max_score = 0
             best_player = []
 
             # Find all players with the highest score
-            for r in range(0, len(self._games)):
+            for r in self.ROOMS:
                 score = self._games[r][0].getScore()
 
                 if (score > max_score):
@@ -179,9 +181,11 @@ class GameManager:
 
             for r in range(0, len(best_player)):
                 self._games[r][0].startWinnerLights()
+
+        # Case: Two Player.
         else:
             # Find the winner of each game, once in each color if there is no winner
-            for r in range(0, len(self._games)):
+            for r in self.ROOMS:
                 score1 = self._games[r][0].getScore()
                 score2 = self._games[r][1].getScore()
 
