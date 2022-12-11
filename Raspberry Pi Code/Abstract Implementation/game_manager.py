@@ -194,7 +194,7 @@ class GameManager:
                 elif (score2 > score1):
                     self._games[r][1].startWinnerLights()
                 else:
-                    self.games[r][0].startTieLights()
+                    self._games[r][0].startTieLights()
 
         # Sends out final scores
         for room in self._games:
