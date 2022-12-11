@@ -108,7 +108,7 @@ class GameManager:
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if game.getTarget() in target_log:
-                    if(self.num_players == 1):
+                    if (self.num_players == 1):
                         newTargetPicker(game, True, None)
                     else:
                         newTargetPicker(game, True, self._games[room][(i+1) % 2])

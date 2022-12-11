@@ -37,6 +37,7 @@ class ShoulderCheckBasicGame(GameManager):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
 
     def pickNextTarget(self, game, score, other_game):
+        """Pick the next target and set new game state. Update score"""
         if(score):
             self.addPoints(game)
 
@@ -58,6 +59,9 @@ class ShoulderCheckBasicGame(GameManager):
             if i == game.getTarget():
                 # Turn on either target 1 (0) or 8 (7) to match
                 game.colorTarget(color, 1 + 6*randint(0,1))
+
+        # Reset counter
+        game.resetCounter()
 
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
