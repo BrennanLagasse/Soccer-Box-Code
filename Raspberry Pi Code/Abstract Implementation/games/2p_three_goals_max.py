@@ -40,8 +40,8 @@ class ThreeGoalsFirstGame(GameManager):
                         game.addPoints(1)
                         game.resetTarget(target)
                         game.extras.remove(target)
-                    if len(game.extras) == 0:
-                        self.end()
+                if len(game.extras) == 0:
+                    self.end()
 
     def standardLightUpdate(self, newTargetPicker):
         """Do Nothing"""
