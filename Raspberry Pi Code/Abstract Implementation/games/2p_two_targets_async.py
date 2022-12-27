@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: 2 targets light up for each player and either is correct, set time, set target time, 2 players
 
 from game_manager import GameManager
 
@@ -8,13 +9,16 @@ class TwoPlayerTwoTargetAsyncGame(GameManager):
     """Standard game except player can choose from either of two targets"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
-        super().pickTwoDoubleTargets()
+        
+        # Pick initial targets
+        for room in self._games:
+            super().pickTwoDoubleTargets(room[0], room[1])
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
 
     def checkTargets(self, target_log, newTargetPicker):
-        """Checks and manages target hits. Looks at both target options"""
+        """Checks if either target is hit and triggers selection of new target pair"""
         for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
@@ -27,6 +31,7 @@ class TwoPlayerTwoTargetAsyncGame(GameManager):
 
         # Reset Targets
         game.resetTarget(game.getTarget())
+        game.resetTarget(game.getNextTarget())
 
         # Pick new targets
         exceptions = [other_game.getTarget(), other_game.getNextTarget()]
@@ -42,14 +47,15 @@ class TwoPlayerTwoTargetAsyncGame(GameManager):
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
         for room in self._games:
-            for game in room:
+            for i in range(self.num_players):
+                game = room[i]
                 # Update lights
                 game.updateLightsCountdown()
                 game.updateLightsCountdownAlt(game.getNextTarget())
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
-                    newTargetPicker(game, False, None)
+                    newTargetPicker(game, False, self._games[game.getRoom()][(i+1) % 2])
 
 
 if __name__ == '__main__':

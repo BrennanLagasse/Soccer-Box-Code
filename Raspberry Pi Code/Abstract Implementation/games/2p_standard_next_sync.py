@@ -14,9 +14,9 @@ class TwoPlayerNextSyncGame(GameManager):
         # Pick initial targets
         for room in self._games:
             for game in room:
-                target = super().pickRandomTarget(room, exceptions)
+                target = super().pickRandomTarget(game.getRoom(), exceptions)
                 exceptions.append(target)
-                game.setTarget()
+                game.setTarget(target)
                 next_target = super().pickRandomTarget(room, exceptions)
                 exceptions.append(next_target)
                 game.setNextTarget(next_target)

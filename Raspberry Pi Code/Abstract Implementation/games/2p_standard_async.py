@@ -12,6 +12,7 @@ class StandardTwoPlayerAsyncGame(GameManager):
         # Pick initial targets
         for room in range(0, len(self._games)):
             self._games[room][0].setTarget(super().pickRandomTarget(room))
+            self._games[room][1].setTarget(super().pickRandomTarget(room, {self._games[room][0].getTarget()}))
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)

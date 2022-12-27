@@ -1,4 +1,6 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: 2 targets light up and must hit both before time expires (first hit turns off that target, second hit switches to next target), set time, set target time
+# Initially, both targets are red. When one is hit, the remaining target turns yellow
 
 from game_manager import GameManager
 
@@ -11,31 +13,41 @@ class OnePlayerBothTargetGame(GameManager):
 
         # Pick initial targets
         for room in self._games:
-            room[0].setTarget(super().pickRandomTarget(room[0].getRoom()))
-            room[0].setNextTarget(super().pickRandomTarget(room[0].getRoom(), {room[0].getTarget()}))
+            for game in room:
+                game.setTarget(super().pickRandomTarget(game.getRoom()))
+                game.setNextTarget(super().pickRandomTarget(game.getRoom(), {game.getTarget()}))
+                game.colorTarget(game.color_primary, game.getNextTarget())
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
 
     def checkTargets(self, target_log, newTargetPicker):
         """Checks and manages target hits. Looks at both target options"""
+        # The flag is used to track which target is hit: 
+        # 0 means no hit, 1 means target 1 is hit, and 2 means target 2 is hit
         for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if game.getTarget() in target_log:
                     game.resetTarget(game.getTarget())
                     if(game.getFlag() == 2):
+                        # Both targets were hit, reset
                         newTargetPicker(game, True, None)
                         game.setFlag(0)
                     else:
+                        # One target was hit, update flag and change other target color
                         game.setFlag(1)
+                        game.colorRemainingTarget(game.getNextTarget(), game.color_alternate)
                 if game.getNextTarget() in target_log:
                     game.resetTarget(game.getNextTarget())
                     if(game.getFlag() == 1):
+                        # Both targets were hit, reset
                         newTargetPicker(game, True, None)
                         game.setFlag(0)
                     else:
+                        # One target was hit, update flag and change other target color
                         game.setFlag(2)
+                        game.colorRemainingTarget(game.getTarget(), game.color_alternate)
 
     def pickNextTarget(self, game, score, other_target):
         if(score):

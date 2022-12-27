@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# Description: all targets light up but only one is the correct red target, set time, set target time
 
 from game_manager import GameManager
 from random import randint
@@ -20,11 +21,9 @@ class StandardOnePlayerColorGame(GameManager):
 
             # Color the rest of the targets at random
             self.randomColors(game)
-            
-
     
     def update(self):
-        super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
+        super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
 
     def pickNextTarget(self, game, score, other_game):
         """Selects new targets and updates score based on boolean score"""
@@ -44,11 +43,12 @@ class StandardOnePlayerColorGame(GameManager):
         for room in self._games:
             for game in room:
                 # Update lights
-                game.updateLightsCountdown()
-                
                 for i in range(game.getRoom() * 8, game.getRoom() * 8 + super().NUM_TARGETS_PER_ROOM):
                     if not (i == game.getTarget()):
                         game.updateLightsCountdownAlt(i)
+                
+                # Update player target last since this increments the counter
+                game.updateLightsCountdown()
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():

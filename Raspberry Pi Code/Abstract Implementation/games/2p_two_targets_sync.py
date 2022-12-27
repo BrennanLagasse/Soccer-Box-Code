@@ -1,6 +1,7 @@
 # Recreates original code for original game with LightStrip and Game classes
 
 from game_manager import GameManager
+import time
 
 NUM_PLAYERS = 2
 
@@ -8,7 +9,10 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
     """Standard game except player can choose from either of two targets"""
     def __init__(self):
         super().__init__(NUM_PLAYERS)
-        super().pickTwoDoubleTargets()
+        
+        # Pick initial targets
+        for room in self._games:
+            super().pickTwoDoubleTargets(room[0], room[1])
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
@@ -32,6 +36,9 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
             g.resetTarget(g.getTarget())
             g.resetTarget(g.getNextTarget())
 
+        # Pause to prevent rereading
+        time.sleep(0.35)
+
         # Pick new targets
         exceptions = []
         
@@ -49,14 +56,15 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
         for room in self._games:
-            for game in room:
+            for i in range(self.num_players):
+                game = room[i]
                 # Update lights
                 game.updateLightsCountdown()
                 game.updateLightsCountdownAlt(game.getNextTarget())
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
-                    newTargetPicker(game, False, None)
+                    newTargetPicker(game, False, self._games[game.getRoom()][(i+1) % 2])
 
 
 if __name__ == '__main__':
