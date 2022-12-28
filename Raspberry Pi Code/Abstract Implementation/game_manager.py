@@ -68,7 +68,7 @@ class GameManager:
         print("START")
     
     def update(self, checkTargets, newTargetPicker, lightsUpdate):
-        """Runs all game associated actions, decision making, and SSH updates (NOT DONE)"""
+        """Runs all game associated actions, decision making, and SSH updates"""
 
         # Get log of targets that where hit
         target_log = self.getTargetLog()
