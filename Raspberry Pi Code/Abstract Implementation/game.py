@@ -122,9 +122,9 @@ class Game:
         for a in range(2):
             for i in range(self.room * 8, self.room * 8 + 8):
                 if(i % 2 == 1):
-                    self.colorTarget(i, self.RED)
+                    self.colorTarget(self.RED, i)
                 else:
-                    self.colorTarget(i, self.BLUE)
+                    self.colorTarget(self.BLUE, i)
             time.sleep(0.5)
             self.lights.resetAll()
             time.sleep(0.5)

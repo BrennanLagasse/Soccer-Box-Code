@@ -5,7 +5,6 @@
 
 import time
 import serial
-import sys
 from random import randint
 import argparse
 
@@ -24,20 +23,21 @@ class GameManager:
         # left out for now
 
         # Format: Number of rooms, r1, ... , rn, target time, game time
-        num_rooms = int(sys.argv[1])
-
+        a = input("Number of Rooms: ")
+        num_rooms = int(a)
         self.ROOMS = []
-        for i in range(2, num_rooms + 2):
-            self.ROOMS.append(int(sys.argv[i]))
-
-        self.TARGET_TIME = int(sys.argv[num_rooms + 2])
-        
-        self.GAME_TIME = int(sys.argv[num_rooms + 3])
+        for i in range(num_rooms):
+            a = input("Room " + str(i) + ": ")
+            self.ROOMS.append(int(a))
+        a = input("Target Time: ")
+        self.TARGET_TIME = int(a)
+        a = input("Game Time: ")
+        self.GAME_TIME = int(a)
 
         # Create and store serial access
         self.serial_connections = []
         self.serial_connections.append(serial.Serial("/dev/ttyUSB0", 9600, timeout=1))
-        # self.serial_connections.append(serial.Serial("/dev/ttyUSB1", 9600, timeout=1))
+        self.serial_connections.append(serial.Serial("/dev/ttyUSB1", 9600, timeout=1))
         # self.serial_connections.append(serial.Serial("/dev/ttyUSB2", 9600, timeout=1))
         # self.serial_connections.append(serial.Serial("/dev/ttyUSB3", 9600, timeout=1))
 
@@ -108,7 +108,7 @@ class GameManager:
             for i in range(self.num_players):
                 game = self._games[room][i]
                 if game.getTarget() in target_log:
-                    if(self.num_players == 1):
+                    if (self.num_players == 1):
                         newTargetPicker(game, True, None)
                     else:
                         newTargetPicker(game, True, self._games[room][(i+1) % 2])
@@ -130,7 +130,7 @@ class GameManager:
 
 
     def pickRandomTarget(self, room, exceptions=[]):
-        """Pick a target from a room excluding given targets"""
+        """Pick a target from a room excluding given targets. Room is an integer, exceptions is a list"""
         x = room*self.NUM_TARGETS_PER_ROOM + randint(0, self.NUM_TARGETS_PER_ROOM - 1)
 
         while x in exceptions:
@@ -152,23 +152,25 @@ class GameManager:
         exceptions = []
 
         for g in games:
-            g.setTarget(super().pickRandomTarget(g.getRoom()))
+            g.setTarget(self.pickRandomTarget(g.getRoom()))
             exceptions.append(g.getTarget())
-            g.setNextTarget(super().pickRandomTarget(g.getRoom(), exceptions))
+            g.setNextTarget(self.pickRandomTarget(g.getRoom(), exceptions))
             g.colorTarget(g.color_primary, g.getNextTarget())
             exceptions.append(g.getNextTarget())
 
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
 
-    def end(self):
+    def end(self, room=0):
         """Manages end notification and score communication via SSH and turns on end lights"""
+
+        # Case: Single Player.
         if self.num_players == 1:
             max_score = 0
             best_player = []
 
             # Find all players with the highest score
-            for r in range(0, len(self._games)):
+            for r in self.ROOMS:
                 score = self._games[r][0].getScore()
 
                 if (score > max_score):
@@ -179,9 +181,11 @@ class GameManager:
 
             for r in range(0, len(best_player)):
                 self._games[r][0].startWinnerLights()
+
+        # Case: Two Player.
         else:
-            # Find the winner of each game, no lights if no winner
-            for r in range(0, len(self._games)):
+            # Find the winner of each game, once in each color if there is no winner
+            for r in self.ROOMS:
                 score1 = self._games[r][0].getScore()
                 score2 = self._games[r][1].getScore()
 
@@ -189,6 +193,8 @@ class GameManager:
                     self._games[r][0].startWinnerLights()
                 elif (score2 > score1):
                     self._games[r][1].startWinnerLights()
+                else:
+                    self._games[r][0].startTieLights()
 
         # Sends out final scores
         for room in self._games:
