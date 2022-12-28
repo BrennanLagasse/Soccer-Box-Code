@@ -34,14 +34,36 @@ class ThreeGoalsFirstGame(GameManager):
     def checkTargets(self, target_log, newTargetPicker):
         """Checks all active targets for a player"""
         for room in self._games:
-            for game in room:
+            for i in range(self.num_players):
+                game = self._games[room][i]
                 for target in game.extras:
                     if target in target_log:
                         game.addPoints(1)
                         game.resetTarget(target)
                         game.extras.remove(target)
                 if len(game.extras) == 0:
-                    self.end()
+                    # Reset targets
+
+                    if (i == 0):
+                        game1 = self._games[room][0]
+
+                        self.player1_targets = [0, 1, 7]
+
+                        for i in self.player1_targets:
+                            target = room * 8 + i
+                            game1.colorTarget(game1.color_primary, target)
+                            game1.extras.append(target)
+
+                    if (i == 1):
+                        game2 = self._games[room][1]
+                        
+                        self.player1_targets = [2, 4, 6]
+
+                        for i in self.player2_targets:
+                            target = room * 8 + i
+                            game2.colorTarget(game2.color_primary, target)
+                            game2.extras.append(target)
+
 
     def standardLightUpdate(self, newTargetPicker):
         """Do Nothing"""
