@@ -52,7 +52,7 @@ if __name__ == '__main__':
     game_manager = ThreeGoalsFirstGame()
 
     try:
-        while not (game_manager.timeExpired() and game_manager.gameOver):
+        while not (game_manager.timeExpired() or game_manager.gameOver()):
             # WIP Read values from arduinos and store in log. Build in wait here
             game_manager.update()
         game_manager.end()
