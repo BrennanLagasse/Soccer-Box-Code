@@ -7,20 +7,11 @@ import serial,time
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
 
     time.sleep(1)
 
     ser = serial.Serial("/dev/ttyUSB0", 9600, timeout=1)
     ser.reset_input_buffer()
-
-    while True:
-
-        while(ser.in_waiting > 0):
-            print("I got a message:")
-            line = ser.readline().decode('utf-8').rstrip()
-            print(line)
-=======
     
     print('Running. Press CTRL-C to exit.')
     with serial.Serial("/dev/ttyUSB3", 9600, timeout=1) as arduino:
@@ -44,4 +35,3 @@ if __name__ == '__main__':
                         arduino.flushInput() #remove data after reading
             except KeyboardInterrupt:
                 print("KeyboardInterrupt has been caught.")
->>>>>>> 8966f8f6d8f4dcd4e1ba9d5deb32326b90d77b3b
