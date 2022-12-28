@@ -22,6 +22,8 @@ class GameManager:
         # Get the key starting information from the app
         # left out for now
 
+        self.complete = False
+
         # Format: Number of rooms, r1, ... , rn, target time, game time
         a = input("Number of Rooms: ")
         num_rooms = int(a)
@@ -161,9 +163,12 @@ class GameManager:
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
 
+    def gameOver(self):
+        """Returns a boolean that indicates if the program is over"""
+        return self.complete
+
     def end(self, room=0):
         """Manages end notification and score communication via SSH and turns on end lights"""
-
         # Case: Single Player.
         if self.num_players == 1:
             max_score = 0
@@ -203,3 +208,6 @@ class GameManager:
         
         # Notifies the app that the system is terminated
         print("END")
+
+        # Sends out the kill message in case the game is not time driven
+        self.complete = True
