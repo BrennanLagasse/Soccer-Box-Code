@@ -55,7 +55,7 @@ class TwoPlayerBothTargetSyncGame(GameManager):
         time.sleep(0.35)
 
         # Pick new targets
-        super().pickTwoDoubleTargets()
+        super().pickTwoDoubleTargets(game, other_game)
 
     def lightUpdate(self, newTargetPicker):
         """Does countdown for target in each game and resets when timer ends. Override for other"""
