@@ -20,6 +20,10 @@ class TwoPlayerNextSyncGame(GameManager):
                 next_target = super().pickRandomTarget(game.getRoom(), exceptions)
                 exceptions.append(next_target)
                 game.setNextTarget(next_target)
+
+                # Color next target
+                game.colorTargetAlternate()
+                game.colorTargetAlternate()
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
