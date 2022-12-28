@@ -34,7 +34,7 @@ class TwoPlayerNextSyncGame(GameManager):
 
         # Set the target to the next target
         game.setTarget(game.getNextTarget())
-        other_game.getTarget(other_game.getNextTarget())
+        other_game.setTarget(other_game.getNextTarget())
 
         # Pick next target
         game.setNextTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget(), other_game.getTarget()]))
