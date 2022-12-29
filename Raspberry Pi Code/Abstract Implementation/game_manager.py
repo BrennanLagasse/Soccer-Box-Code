@@ -158,7 +158,6 @@ class GameManager:
             exceptions.append(g.getTarget())
             g.setNextTarget(self.pickRandomTarget(g.getRoom(), exceptions))
             g.colorTarget(g.color_primary, g.getNextTarget())
-            exceptions.append(g.getNextTarget())
 
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
