@@ -32,7 +32,7 @@ class GameManager:
             a = input("Room " + str(i) + ": ")
             self.ROOMS.append(int(a))
         a = input("Target Time: ")
-        self.TARGET_TIME = int(a)
+        self.TARGET_TIME = float(a)
         a = input("Game Time: ")
         self.GAME_TIME = int(a)
 
