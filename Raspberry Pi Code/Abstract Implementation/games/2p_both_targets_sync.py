@@ -22,22 +22,30 @@ class TwoPlayerBothTargetSyncGame(GameManager):
         for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
+                # First target hit
                 if game.getTarget() in target_log:
                     game.resetTarget(game.getTarget())
                     if(game.getFlag() == 2):
+                        # Both targets have been hit, reset
                         newTargetPicker(game, True, self._games[room][(i + 1) % 2])
                         game.setFlag(0)
                     else:
+                        # First target to be hit, note and change color of other target
                         game.setFlag(1)
-                        game.colorRemainingTarget(game.getTarget(), game.color_alternate)
+                        game.colorRemainingTarget(game.getNextTarget(), game.color_alternate)
+
+                # Second target hit
                 if game.getNextTarget() in target_log:
                     game.resetTarget(game.getNextTarget())
                     if(game.getFlag() == 1):
+                        # Both targets have been hit, reset
                         newTargetPicker(game, True, self._games[room][(i + 1) % 2])
                         game.setFlag(0)
                     else:
+                        # First target to be hit, note and change color of other target
                         game.setFlag(2)
                         game.colorRemainingTarget(game.getTarget(), game.color_alternate)
+
 
     def pickNextTarget(self, game, score, other_game):
         if(score):
