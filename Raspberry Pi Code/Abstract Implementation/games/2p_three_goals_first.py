@@ -41,7 +41,7 @@ class ThreeGoalsFirstGame(GameManager):
                         game.resetTarget(target)
                         game.extras.remove(target)
                 if len(game.extras) == 0:
-                    self.end()
+                    self.setGameOver()
 
     def standardLightUpdate(self, newTargetPicker):
         """Do Nothing"""

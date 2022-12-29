@@ -163,6 +163,10 @@ class GameManager:
     def timeExpired(self):
         return time.time() - self.start_time >= self.GAME_TIME
 
+    def setGameOver(self):
+        """Triggers the kill switch for the game"""
+        self.complete = True
+
     def gameOver(self):
         """Returns a boolean that indicates if the program is over"""
         return self.complete
@@ -208,6 +212,3 @@ class GameManager:
         
         # Notifies the app that the system is terminated
         print("END")
-
-        # Sends out the kill message in case the game is not time driven
-        self.complete = True
