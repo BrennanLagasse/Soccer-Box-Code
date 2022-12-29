@@ -33,7 +33,7 @@ class ThreeGoalsFirstGame(GameManager):
 
     def checkTargets(self, target_log, newTargetPicker):
         """Checks all active targets for a player"""
-        for room in self._games:
+        for room in range(0, len(self._games)):
             for i in range(self.num_players):
                 game = self._games[room][i]
                 for target in game.extras:
