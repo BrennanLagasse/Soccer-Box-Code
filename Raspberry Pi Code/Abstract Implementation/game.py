@@ -83,12 +83,13 @@ class Game:
 
     def updateLightsCountdown(self):
         """Turns off the next light in sequence on the target"""
-        self.lights.colorWipe(self.target, self.light_index)
+        self.lights.colorWipe([self.target], self.light_index)
         self.light_index += 1
 
-    def updateLightsCountdownAlt(self, target):
-        """Turns off the next light in sequence on any target"""
-        self.lights.colorWipe(target, self.light_index)
+    def updateLightsCountdownAlt(self, targets):
+        """Turns off the next light in all listed targets"""
+        self.lights.colorWipe(targets, self.light_index)
+        self.light_index += 1
 
     def colorTarget(self, color, target):
         """Lights up a target in the given color"""

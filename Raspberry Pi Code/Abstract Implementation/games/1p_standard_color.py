@@ -43,12 +43,8 @@ class StandardOnePlayerColorGame(GameManager):
         for room in self._games:
             for game in room:
                 # Update lights
-                for i in range(game.getRoom() * 8, game.getRoom() * 8 + super().NUM_TARGETS_PER_ROOM):
-                    if not (i == game.getTarget()):
-                        game.updateLightsCountdownAlt(i)
-                
-                # Update player target last since this increments the counter
-                game.updateLightsCountdown()
+                targets = [0, 1, 2, 3, 4, 5, 6, 7]
+                game.updateLightsCountdownAlt(targets)
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
