@@ -11,7 +11,7 @@ class LightStrip:
     LED_CHANNEL = 0
     LED_PER_TARGET = 33
     NUM_TARGETS_ROOM = 8
-    NUM_ROOMS = 4
+    NUM_ROOMS = 1
     LED_COUNT = LED_PER_TARGET * NUM_TARGETS_ROOM * NUM_ROOMS
 
     BLACK = Color(0, 0, 0)
@@ -24,10 +24,6 @@ class LightStrip:
 
     def colorWipe(self, target, index):
         """Erase color at the given index"""
-        a = target * 2
-        b = self.LED_PER_TARGET * 3
-        c = index * 2
-
         i = target*self.LED_PER_TARGET + index
         self.strip.setPixelColor(i, self.BLACK)
         self.strip.show()
