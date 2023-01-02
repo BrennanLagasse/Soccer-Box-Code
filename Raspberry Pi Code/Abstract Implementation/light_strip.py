@@ -22,10 +22,11 @@ class LightStrip:
         self.strip = Adafruit_NeoPixel(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
         self.strip.begin()
 
-    def colorWipe(self, target, index):
-        """Erase color at the given index"""
-        i = target*self.LED_PER_TARGET + index
-        self.strip.setPixelColor(i, self.BLACK)
+    def colorWipe(self, targets, index):
+        """Turn off last light of given index at all listed targets (simultaneous is key to prevent repeat calls to show)"""
+        for i in range(0, len(targets)):
+            i = index + targets[i]*self.LED_PER_TARGET
+            self.strip.setPixelColor(i, self.BLACK)
         self.strip.show()
 
     def fillTarget(self, color, target):
