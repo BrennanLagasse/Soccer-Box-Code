@@ -58,9 +58,10 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
         for room in self._games:
             for i in range(self.num_players):
                 game = room[i]
+
                 # Update lights
-                game.updateLightsCountdown()
-                game.updateLightsCountdownAlt(game.getNextTarget())
+                targets = [game.getTarget(), game.getNextTarget()]
+                game.updateLightsCountdownAlt(targets)
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
