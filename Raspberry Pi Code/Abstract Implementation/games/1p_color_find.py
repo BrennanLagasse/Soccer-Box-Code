@@ -22,8 +22,6 @@ class ColorFindGame(GameManager):
 
             # Color the rest of the targets at random
             self.randomColors(game)
-            
-
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.lightUpdate)
@@ -46,9 +44,9 @@ class ColorFindGame(GameManager):
         for room in self._games:
             for game in room:
                 # Update lights
-                for i in range(game.getRoom() * 8, game.getRoom() * 8 + super().NUM_TARGETS_PER_ROOM):
-                    if not (i == game.getTarget()):
-                        game.updateLightsCountdownAlt(i)
+                start = game.getRoom()*8
+                targets = [i + start*8 for i in range(0,8)]
+                game.updateLightsCountdownAlt(targets)
                 
                 # Update player target last since this increments the counter
                 game.updateLightsCountdown()

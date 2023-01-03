@@ -1,4 +1,4 @@
-# Recreates original code for original game with LightStrip and Game classes
+# Double Standard Game – 1 target (must be hit twice), set time, set target time 
 
 from game_manager import GameManager
 

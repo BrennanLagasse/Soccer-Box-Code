@@ -83,9 +83,6 @@ class OnePlayerBothTargetGame(GameManager):
                 if game.checkCountdownEnded():
                     newTargetPicker(game, False, None)
 
-
-
-
 if __name__ == '__main__':
     print('Running. Press CTRL-C to exit.')
 

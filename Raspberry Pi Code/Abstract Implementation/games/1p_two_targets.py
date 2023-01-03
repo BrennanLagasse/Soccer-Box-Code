@@ -1,4 +1,4 @@
-# Recreates original code for original game with LightStrip and Game classes
+# Standard Game Next – 2 targets (current and next), set time, set target time
 
 from game_manager import GameManager
 
@@ -55,14 +55,12 @@ class OnePlayerTwoTargetGame(GameManager):
         for room in self._games:
             for game in room:
                 # Update lights
-                game.updateLightsCountdown()
-                game.updateLightsCountdownAlt(game.getNextTarget())
+                targets = [game.getTarget(), game.getNextTarget()]
+                game.updateLightsCountdownAlt(targets)
 
                 # Update target if all lights are out
                 if game.checkCountdownEnded():
                     newTargetPicker(game, False, None)
-
-
 
 
 if __name__ == '__main__':
