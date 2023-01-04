@@ -11,7 +11,7 @@ class LightStrip:
     LED_CHANNEL = 0
     LED_PER_TARGET = 33
     NUM_TARGETS_ROOM = 8
-    NUM_ROOMS = 1
+    NUM_ROOMS = 2
     LED_COUNT = LED_PER_TARGET * NUM_TARGETS_ROOM * NUM_ROOMS
 
     BLACK = Color(0, 0, 0)
@@ -30,7 +30,12 @@ class LightStrip:
         self.strip.show()
 
     def fillTarget(self, color, target):
-        """Instantly change color of all lights in target range"""
+        """Instantly change color of all lights in target range. This is where rerouting occurs"""
+
+        # Rerouting algorithm
+        if(target >= 8 and target % 8 != 0):
+            target = target + 8 - 2*(target % 8)
+
         start = target*self.LED_PER_TARGET
         for i in range(start, start + self.LED_PER_TARGET):
             self.strip.setPixelColor(i, color)
@@ -54,3 +59,18 @@ class LightStrip:
         """Reset all of the LEDs in the smart box"""
         for target in range(0, self.NUM_TARGETS_ROOM * self.NUM_ROOMS):
                 self.fillTarget(self.BLACK, target)
+
+    def fillTargetSegment(self, color, target, segment):
+        """Fill a segment of a target: (0) first ten (1) next thirteen (2) last ten"""
+        start = target*self.LED_PER_TARGET
+
+        if(segment == 0):
+            for i in range(start, start + 10):
+                self.strip.setPixelColor(i, color)
+        if(segment == 1):
+            for i in range(start + 10, start + 23):
+                self.strip.setPixelColor(i, color)
+        if(segment == 2):
+            for i in range(start + 23, start + 33):
+                self.strip.setPixelColor(i, color)
+        self.strip.show()

@@ -193,7 +193,7 @@ class GameManager:
         # Case: Two Player.
         else:
             # Find the winner of each game, once in each color if there is no winner
-            for r in self.ROOMS:
+            for r in range(0, self.ROOMS):
                 score1 = self._games[r][0].getScore()
                 score2 = self._games[r][1].getScore()
 

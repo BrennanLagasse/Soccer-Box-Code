@@ -11,6 +11,8 @@ import argparse
 from game import Game
 from light_strip import LightStrip
 
+import sys
+
 class GameManager:
     NUM_TARGETS_PER_ROOM = 8
     NUM_ROOMS = 4
@@ -177,7 +179,7 @@ class GameManager:
             best_player = []
 
             # Find all players with the highest score
-            for r in self.ROOMS:
+            for r in range(0, len(self.ROOMS)):
                 score = self._games[r][0].getScore()
 
                 if (score > max_score):
@@ -192,7 +194,7 @@ class GameManager:
         # Case: Two Player.
         else:
             # Find the winner of each game, once in each color if there is no winner
-            for r in self.ROOMS:
+            for r in range(0, len(self.ROOMS)):
                 score1 = self._games[r][0].getScore()
                 score2 = self._games[r][1].getScore()
 
