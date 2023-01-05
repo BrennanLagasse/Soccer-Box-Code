@@ -7,3 +7,7 @@ for target in range(8, 24):
     
     print(target)
     print(" ")
+
+targets = [1, 2]
+
+print(targets)
