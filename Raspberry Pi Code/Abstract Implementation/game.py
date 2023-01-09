@@ -114,9 +114,9 @@ class Game:
         """Flashes all of the lights in the player's color twice then turns them off"""
         for i in range(2):
             self.lights.fillRoom(self.color_primary, self.room)
-            time.sleep(0.5)
+            time.sleep(0.75)
             self.lights.resetAll()
-            time.sleep(0.5)
+            time.sleep(0.75)
 
     def startTieLights(self):
         """Flashes lights in alternating blue red pattern"""
@@ -126,7 +126,7 @@ class Game:
                     self.colorTarget(self.RED, i)
                 else:
                     self.colorTarget(self.BLUE, i)
-            time.sleep(0.5)
+            time.sleep(0.75)
             self.lights.resetAll()
-            time.sleep(0.5)
+            time.sleep(0.75)
         
