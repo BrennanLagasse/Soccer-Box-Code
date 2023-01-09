@@ -11,7 +11,7 @@ class LightStrip:
     LED_CHANNEL = 0
     LED_PER_TARGET = 33
     NUM_TARGETS_ROOM = 8
-    NUM_ROOMS = 2
+    NUM_ROOMS = 4
     LED_COUNT = LED_PER_TARGET * NUM_TARGETS_ROOM * NUM_ROOMS
 
     BLACK = Color(0, 0, 0)
@@ -22,28 +22,39 @@ class LightStrip:
         self.strip = Adafruit_NeoPixel(self.LED_COUNT, self.LED_PIN, self.LED_FREQ_HZ, self.LED_DMA, self.LED_INVERT, self.LED_BRIGHTNESS, self.LED_CHANNEL)
         self.strip.begin()
 
+    def targetCorrect(self, target):
+        """Takes a target number in standard format and converts it to match the wiring of each room"""
+
+        # Rerouting algorithm
+        if(target >= 16):
+            # Room 3 and 4 Correction
+            return (target // 8)*8 + 7 - (target % 8)
+
+        if(target >= 8 and target % 8 != 0):
+            # Room 2 correction
+            return target + 8 - 2*(target % 8)
+
+        return target
+
+
     def colorWipe(self, targets, index):
         """Turn off last light of given index at all listed targets (simultaneous is key to prevent repeat calls to show)"""
         for i in range(0, len(targets)):
-            i = index + targets[i]*self.LED_PER_TARGET
+            i = index + self.targetCorrect(targets[i])*self.LED_PER_TARGET
             self.strip.setPixelColor(i, self.BLACK)
         self.strip.show()
 
     def fillTarget(self, color, target):
         """Instantly change color of all lights in target range. This is where rerouting occurs"""
 
-        # Rerouting algorithm
-        if(target >= 8 and target % 8 != 0):
-            target = target + 8 - 2*(target % 8)
-
-        start = target*self.LED_PER_TARGET
+        start = self.targetCorrect(target)*self.LED_PER_TARGET
         for i in range(start, start + self.LED_PER_TARGET):
             self.strip.setPixelColor(i, color)
         self.strip.show()
 
     def fillRemainingTarget(self, color, target, index):
         """Instantly change all remaining lights on a target to a different color"""
-        start = target*self.LED_PER_TARGET + index
+        start = self.targetCorrect(target)*self.LED_PER_TARGET + index
         for i in range(start, start + self.LED_PER_TARGET  - index):
             self.strip.setPixelColor(i, color)
         self.strip.show()
@@ -57,12 +68,15 @@ class LightStrip:
 
     def resetAll(self):
         """Reset all of the LEDs in the smart box"""
-        for target in range(0, self.NUM_TARGETS_ROOM * self.NUM_ROOMS):
-                self.fillTarget(self.BLACK, target)
+        for room in range(0, self.NUM_ROOMS):
+            start = room*self.NUM_TARGETS_ROOM*self.LED_PER_TARGET
+            for i in range(start, start + self.LED_PER_TARGET*self.NUM_TARGETS_ROOM):
+                self.strip.setPixelColor(i, self.BLACK)
+        self.strip.show()
 
     def fillTargetSegment(self, color, target, segment):
         """Fill a segment of a target: (0) first ten (1) next thirteen (2) last ten"""
-        start = target*self.LED_PER_TARGET
+        start = self.targetCorrect(target)*self.LED_PER_TARGET
 
         if(segment == 0):
             for i in range(start, start + 10):
