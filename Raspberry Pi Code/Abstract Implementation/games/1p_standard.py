@@ -10,8 +10,8 @@ class StandardOnePlayerGame(GameManager):
         super().__init__(NUM_PLAYERS)
 
         # Pick initial targets
-        for room in range(0, len(self._games)):
-            self._games[room][0].setTarget(super().pickRandomTarget(room))
+        for game in range(0, len(self._games)):
+            self._games[game][0].setTarget(super().pickRandomTarget(game.getRoom()))
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
