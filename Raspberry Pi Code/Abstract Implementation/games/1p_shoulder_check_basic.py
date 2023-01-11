@@ -75,7 +75,7 @@ class ShoulderCheckBasicGame(GameManager):
 
             # Update target if all lights are out
             if game.checkCountdownEnded():
-                newTargetPicker(game, False, self._games[game.getRoom()][(i+1) % 2])
+                newTargetPicker(game, False, None)
 
 
 if __name__ == '__main__':
