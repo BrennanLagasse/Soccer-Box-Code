@@ -37,10 +37,12 @@ class TwoPlayerTwoTargetSyncGame(GameManager):
             g.resetTarget(g.getNextTarget())
 
         # Pause to prevent rereading
-        time.sleep(0.35)
+        time.sleep(0.4)
 
         # Pick new targets
-        exceptions = []
+
+        # Make it less likely next targets are in the same position (without creating set rotation)
+        exceptions = [games[0].getTarget(), games[1].getTarget()]
         
         for g in games:
             g.setTarget(super().pickRandomTarget(g.getRoom(), exceptions))

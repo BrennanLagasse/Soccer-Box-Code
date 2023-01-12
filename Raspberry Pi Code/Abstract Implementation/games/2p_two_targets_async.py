@@ -33,8 +33,8 @@ class TwoPlayerTwoTargetAsyncGame(GameManager):
         game.resetTarget(game.getTarget())
         game.resetTarget(game.getNextTarget())
 
-        # Pick new targets
-        exceptions = [other_game.getTarget(), other_game.getNextTarget()]
+        # Pick new targets, increase change of target in different spot
+        exceptions = [other_game.getTarget(), other_game.getNextTarget(), game.getTarget()]
 
         game.setTarget(super().pickRandomTarget(game.getRoom(), exceptions))
         exceptions.append(game.getTarget())

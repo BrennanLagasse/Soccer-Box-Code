@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# 2 targets each (current and next), set time, set target time, 2 players
 
 from game_manager import GameManager
 
@@ -32,6 +33,9 @@ class TwoPlayerNextSyncGame(GameManager):
         if score:
             self.addPoints(game)
 
+        # Get exceptions
+        exceptions = [game.getTarget(), other_game.getTarget(), game.getNextTarget(), other_game.getNextTarget()]
+
         # Reset targets
         game.resetTarget(game.getTarget())
         other_game.resetTarget(other_game.getTarget())
@@ -41,8 +45,9 @@ class TwoPlayerNextSyncGame(GameManager):
         other_game.setTarget(other_game.getNextTarget())
 
         # Pick next target
-        game.setNextTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget(), other_game.getTarget()]))
-        other_game.setNextTarget(self.pickRandomTarget(other_game.getRoom(), [game.getTarget(), other_game.getTarget(), other_game.getNextTarget()]))
+        game.setNextTarget(self.pickRandomTarget(game.getRoom(), exceptions))
+        exceptions.append(game.getNextTarget())
+        other_game.setNextTarget(self.pickRandomTarget(other_game.getRoom(), exceptions))
 
         # Color next target
         game.colorTargetAlternate()

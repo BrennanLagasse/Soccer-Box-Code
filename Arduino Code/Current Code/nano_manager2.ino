@@ -31,7 +31,7 @@ SparkFun Multiplexer Breakout - 8-Channel(74HC4051) v10
 // declare an SSD1306 display object connected to I2C
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-// Piezo Init *****************************************************************
+// Piezo Init ****************************************************************
 
 // Pins
 const int selectPins[3] = {2, 3, 4}; // S0~2, S1~3, S2~4
@@ -47,12 +47,22 @@ float hitTime [numPiezos] = {0, 0, 0, 0, 0, 0, 0, 0};
 // Global minimum value to consider triggered
 const int threshold = 300;
 
-// Setup **********************************************************************
+// Other *********************************************************************
+
+bool singlePlayer = true;
+
+int score1 = 0;
+int score2 = 0;
+
+// Store serial data
+String msg;
+
+// Setup *********************************************************************
 void setup() {
   // Initialize the serial port
   Serial.begin(9600); 
 
-  // Multiplexer **************************************************************
+  // Multiplexer *************************************************************
 
   // Set up the select pins as outputs:
   for (int i=0; i<3; i++)
@@ -64,7 +74,7 @@ void setup() {
   // Set the Z pin as input
   pinMode(zInput, INPUT); // Set up Z as an input
 
-  // Scoreboard ***************************************************************
+  // Scoreboard **************************************************************
 
     // initialize OLED display with address 0x3C for 128x64
   if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
@@ -72,30 +82,32 @@ void setup() {
     while (true);
   }
 
-  delay(2000);         // wait for initializing
-  oled.clearDisplay(); // clear display
+  // wait for initializing
+  delay(2000);         
 
-  oled.setTextSize(2);
-  oled.setTextColor(WHITE);
-  
-  oled.setCursor(25, 0);
-  oled.println("P1");
-  
-  oled.setCursor(85, 0);
-  oled.println("P2");
-
-  oled.setTextSize(3);
-
-  oled.setCursor(20, 35);
-  oled.println("01");
-
-  oled.setCursor(80, 35);
-  oled.println("15");
-  oled.display();   
+  setScoreboardSingle("0"); 
 }
 
 void loop() 
 {
+
+  // Check for an update from the pi
+  readSerialPort();
+
+  if(msg != "") {
+    // Check if it is a score message
+    if(msg[0] == 'P') {
+      // Check which player
+      if(msg[1] == '1') {
+        score1 = msg.substr(3);
+        setScoreboardDouble(score1, score2);
+      }
+      if(msg[1] == '2') {
+        score2 = msg.substr(3);
+        setScoreboardDouble(score1, score2);
+      }
+    }
+  }
 
   // Iterate through all pressure sensors
   // Bounce time of 0.25 seconds
@@ -119,3 +131,63 @@ void selectMuxPin(byte pin)
       digitalWrite(selectPins[i], LOW);
   }
 }
+
+// The readSerialPort() function checks if there are any messages from the pi
+void readSerialPort() {
+  msg = "";
+  if (Serial.available()) {
+    delay(10);
+    while (Serial.available() > 0) {
+      msg += (char) Serial.read();
+    }
+    Serial.flush();
+  }
+}
+
+// The setScoreSingle(int s1) prints the score for a single player game
+// String s1 is the score of player1
+void setScoreboardSingle(int s1) {
+  oled.clearDisplay();
+
+  oled.setTextSize(2);
+  oled.setTextColor(WHITE);
+
+  oled.setCursor(50, 0);
+  oled.println("P1");
+
+  oled.setTextSize(3);
+
+  oled.setCursor(20, 35);
+  oled.println(s1);
+
+  oled.display(); 
+}
+
+// The setScoreDouble(int s1, int s2) prints the scores for a two player game
+// String s1 is the score of player1
+// String s2 is the score of player2
+void setScoreboardDouble(int s1, int s2) {
+  oled.clearDisplay();
+
+  oled.setTextSize(2);
+  oled.setTextColor(WHITE);
+
+  oled.setCursor(25, 0);
+  oled.println("P1");
+
+  oled.setCursor(85, 0);
+  oled.println("P2");
+
+  oled.setTextSize(3);
+
+  oled.setCursor(20, 35);
+  oled.println(s1);
+
+  oled.setCursor(80, 35);
+  oled.println(s2);
+  oled.display();  
+}
+
+
+
+

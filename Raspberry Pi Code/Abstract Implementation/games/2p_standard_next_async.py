@@ -1,4 +1,5 @@
 # Recreates original code for original game with LightStrip and Game classes
+# 2 targets each (current and next), set time, set target time, 2 players
 
 from game_manager import GameManager
 
@@ -9,9 +10,21 @@ class TwoPlayerNextAsyncGame(GameManager):
     def __init__(self):
         super().__init__(NUM_PLAYERS)
 
+        exceptions = []
+
         # Pick initial targets
         for room in self._games:
-            super().pickTwoDoubleTargets(room[0], room[1])
+            for game in room:
+                target = super().pickRandomTarget(game.getRoom(), exceptions)
+                exceptions.append(target)
+                game.setTarget(target)
+                next_target = super().pickRandomTarget(game.getRoom(), exceptions)
+                exceptions.append(next_target)
+                game.setNextTarget(next_target)
+
+                # Color next target
+                game.colorTargetAlternate()
+                game.colorTargetAlternate()
     
     def update(self):
         super().update(self.checkTargets, self.pickNextTarget, self.standardLightUpdate)
@@ -20,6 +33,9 @@ class TwoPlayerNextAsyncGame(GameManager):
         if score:
             self.addPoints(game)
 
+        # Get exceptions
+        exceptions = [game.getTarget(), other_game.getTarget(), game.getNextTarget(), other_game.getNextTarget()]
+
         # Reset targets
         game.resetTarget(game.getTarget())
 
@@ -27,7 +43,7 @@ class TwoPlayerNextAsyncGame(GameManager):
         game.setTarget(game.getNextTarget())
 
         # Pick next target
-        game.setNextTarget(self.pickRandomTarget(game.getRoom(), [game.getTarget(), other_game.getTarget(), other_game.getNextTarget()]))
+        game.setNextTarget(self.pickRandomTarget(game.getRoom(), exceptions))
         
         # Color next target
         game.colorTargetAlternate()
