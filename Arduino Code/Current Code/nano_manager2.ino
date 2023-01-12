@@ -85,7 +85,7 @@ void setup() {
   // wait for initializing
   delay(2000);         
 
-  setScoreboardSingle("0"); 
+  setScoreboardDouble(0, 0); 
 }
 
 void loop() 
@@ -98,14 +98,26 @@ void loop()
     // Check if it is a score message
     if(msg[0] == 'P') {
       // Check which player
-      if(msg[1] == '1') {
-        score1 = msg.substr(3);
+      if(msg[1] == '0') {
+        score1 = msg.substring(3).toInt();
         setScoreboardDouble(score1, score2);
       }
-      if(msg[1] == '2') {
-        score2 = msg.substr(3);
+      else if(msg[1] == '1') {
+        score2 = msg.substring(3).toInt();
         setScoreboardDouble(score1, score2);
       }
+      else {
+        oled.clearDisplay();
+
+        oled.setTextSize(3);
+        oled.setTextColor(WHITE);
+      
+        oled.setCursor(50, 0);
+        oled.println(msg);
+      }
+    }
+    else {
+      setScoreboardDouble(-2, -2);
     }
   }
 
@@ -181,10 +193,10 @@ void setScoreboardDouble(int s1, int s2) {
   oled.setTextSize(3);
 
   oled.setCursor(20, 35);
-  oled.println(s1);
+  oled.println(String(s1));
 
   oled.setCursor(80, 35);
-  oled.println(s2);
+  oled.println(String(s2));
   oled.display();  
 }
 
