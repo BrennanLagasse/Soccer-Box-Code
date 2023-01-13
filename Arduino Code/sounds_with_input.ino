@@ -8,7 +8,8 @@
 #include "SPI.h"
 
 
-#define SD_ChipSelectPin 4
+// Used to be 4
+#define SD_ChipSelectPin 10
 
 TMRpcm music;
 
@@ -22,6 +23,9 @@ void setup(){
     Serial.println("SD fail");
     return;
   }
+  else {
+    Serial.println("SD Success");
+  }
   
   music.setVolume(5);    //   0 to 7. Set volume level
   
@@ -31,7 +35,7 @@ void setup(){
 
 void loop() { 
 
-    String content = "";
+  String content = "";
   char character;
 
       
@@ -42,7 +46,7 @@ void loop() {
   }
         
   if (content == "red\n") {
-    Serial.println("yay");
+    Serial.println("red");
     music.play("red.WAV");
   }
   else if (content == "orange\n") {

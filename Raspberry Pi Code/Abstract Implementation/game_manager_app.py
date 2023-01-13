@@ -209,6 +209,8 @@ class GameManager:
         for room in self._games:
             for game in room:
                 game.reportScore()
+
+        self.writeToArduino(0, "end")
         
         # Notifies the app that the system is terminated
         print("END")

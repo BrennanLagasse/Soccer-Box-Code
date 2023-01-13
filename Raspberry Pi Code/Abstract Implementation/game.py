@@ -9,14 +9,14 @@ class Game:
     NUM_TARGETS = 8
 
     BLACK = Color(0,0,0)
-    WHITE = Color(255, 255, 255)
     RED = Color(255, 0, 0)
-    ORANGE = Color(255, 165, 0)
-    YELLOW = Color(253, 88, 0)
+    ORANGE = Color(210, 30, 0)
+    YELLOW = Color(255, 155, 0)
     GREEN = Color(0, 255, 0)
     BLUE = Color(0, 0, 255)
-    PURPLE = Color(128,49,167)
-    PINK = Color(251, 72, 196)
+    PURPLE = Color(125,51, 230)
+    PINK = Color(255, 80, 40)
+    WHITE = Color(255, 255, 255)
 
 
     def __init__(self, room_number, player_number, lights):
