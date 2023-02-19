@@ -1,6 +1,11 @@
-#include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+// Packages
+#include <Wire.h> // Scoreboard
+#include <Adafruit_GFX.h> // Scoreboard
+#include <Adafruit_SSD1306.h> // Scoreboard
+#include "SD.h" // SD Reader
+#include "SPI.h" // SD Reader
+#include "TMRpcm.h" // Audio
+
 
 #define SCREEN_WIDTH 128 // OLED display width,  in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -22,15 +27,6 @@ float hitTime [8] = {0, 0, 0, 0, 0, 0, 0, 0};
 const int threshold = 300;
 
 // Speaker *******************************************************************
-//Lib to read SD card 
-#include "SD.h"
-
-//Lib to play auido
-#include "TMRpcm.h" 
-
-//SPI lib for SD card
-#include "SPI.h"
-
 
 // Used to be 4
 #define SD_ChipSelectPin 10
