@@ -40,7 +40,7 @@ class GameManager:
         # Create and store serial access
         self.serial_connections = []
         self.serial_connections.append(serial.Serial("/dev/ttyUSB0", 9600, timeout=5))
-        self.serial_connections.append(serial.Serial("/dev/ttyUSB1", 9600, timeout=5))
+        # self.serial_connections.append(serial.Serial("/dev/ttyUSB1", 9600, timeout=5))
         # self.serial_connections.append(serial.Serial("/dev/ttyUSB2", 9600, timeout=5))
         # self.serial_connections.append(serial.Serial("/dev/ttyUSB3", 9600, timeout=5))
 
