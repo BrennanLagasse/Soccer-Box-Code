@@ -16,7 +16,7 @@ import sys
 class GameManager:
     NUM_TARGETS_PER_ROOM = 8
     NUM_ROOMS = 4
-    LED_PER_TARGET = 33
+    LED_PER_TARGET = 45
 
     def __init__(self, num_players):
         """Add all physical components to the game manager"""

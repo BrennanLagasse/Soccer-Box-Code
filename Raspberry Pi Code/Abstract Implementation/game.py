@@ -5,7 +5,7 @@ import time
 
 class Game:
 
-    LED_PER_TARGET = 33
+    LED_PER_TARGET = 45
     NUM_TARGETS = 8
 
     BLACK = Color(0,0,0)
