@@ -9,7 +9,7 @@ from random import randint
 import argparse
 
 from game import Game
-from light_stripV2 import LightStrip
+from light_stripV3 import LightStrip
 
 class GameManager:
     NUM_TARGETS_PER_ROOM = 8
